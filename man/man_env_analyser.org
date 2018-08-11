@@ -1,0 +1,25 @@
+#+TITLE: Environment Analyser
+
+* Description
+
+A more powerful way of manipulating the environment for viewing and comparing
+environments.
+
+* Usage
+
+=env_analyser [pretty|dump|...]
+
+* Options
+
+None
+
+* See also
+
+** envdiff
+
+Tool for viewing the difference between the environments before and after a
+command
+
+** jsenv
+
+Command line dumper of the environemnt to JSON for usage by env_analyser

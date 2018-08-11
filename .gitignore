@@ -1,3 +1,4 @@
 *.restore
 *.delete
 ACTIVE
+*.man
