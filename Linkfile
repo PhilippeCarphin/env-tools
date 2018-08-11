@@ -1,4 +1,4 @@
-$HOME/.local/bin/pyenv env_analyser.sh
+$HOME/.local/bin/pyenv pyenv.sh
 $HOME/.local/bin/jsenv json_dumpenv
 $HOME/.local/bin/envdiff env_diff.sh
-$HOME/.local/man/man1/pyenv.1    man/man_env_analyser.man
+$HOME/.local/man/man1/pyenv.1    man/man_pyenv.man

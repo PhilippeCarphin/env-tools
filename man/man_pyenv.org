@@ -1,0 +1,94 @@
+#+TITLE: Environment Analyser
+
+* DESCRIPTION
+
+A more powerful way of manipulating the environment for viewing and comparing
+environments.
+
+* USAGE
+
+#+BEGIN_SRC sh
+pyenv pretty
+pyenv dump
+pyenv compare py_env1.json py_env2.json
+pyenv get VAR
+#+END_SRC
+
+* COMMANDS
+
+There are four commands /pretty/, /dump/, /compare/ and /get/.
+
+** pretty
+
+Pretty-print the environment
+
+#+BEGIN_SRC sh
+pyenv pretty
+#+END_SRC
+
+** dump
+
+Print a JSON dump to the console
+
+#+BEGIN_SRC sh
+pyenv dump
+#+END_SRC
+
+** compare
+
+Compare two dumps by printing a digested report to the console.
+
+#+BEGIN_SRC sh
+pyenv compare py_env1.json py_env2.json
+#+END_SRC
+
+** get
+
+Get the value of a variable.  /VAR/ is the variable name (no dollar sign).
+
+#+BEGIN_SRC sh
+pyenv get VAR
+#+END_SRC
+
+
+* CUSTOMISATION
+
+If you define a special function for parsing, you should declare functions for
+stringizing lest you get execptions.
+
+#+BEGIN_SRC python
+  import pyenv
+
+  @pyenv.parses(['SSH_CLIENT'])
+  def process_ssh_client(value):
+      tokens = value.split(' ')
+      return {"ip":tokens[0],
+              "port1": tokens[1],
+              "port2":tokens[2],
+              "rest":"_".join(tokens[3:])}
+
+  @pyenv.stringizes(['SSH_CLIENT'])
+  @pyenv.pretty_stringizes(['SSH_CLIENT'])
+  def pretty_str_ssh_client(var, value):
+      return var + '=' + ' '.join(value[k] for k in value)
+
+  if __name__ == "__main__":
+      env = pyenv.PyEnv()
+      print(env.pretty())
+
+#+END_SRC
+
+* SEE ALSO
+
+** envdiff
+
+Tool for viewing the difference between the environments before and after a
+command
+
+** jsenv
+
+Print a json dump /json.dumps(os.environ())/ which is which is all strings as
+opposed to the pyenv version.
+#+BEGIN_SRC sh
+jsenv
+#+END_SRC
