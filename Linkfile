@@ -1,0 +1,3 @@
+$HOME/.local/bin/pyenv env_analyser.sh
+$HOME/.local/bin/jsenv json_dumpenv
+$HOME/.local/bin/envdiff env_diff.sh
