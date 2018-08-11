@@ -9,4 +9,4 @@ while [ -L $this_file ] ; do
     fi
 done
 this_dir=$(cd -P $(dirname $this_file) > /dev/null && pwd)
-python $this_dir/pyenv.py $@
+python $this_dir/example.py $@
