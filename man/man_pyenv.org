@@ -14,6 +14,516 @@ pyenv compare py_env1.json py_env2.json
 pyenv get VAR
 #+END_SRC
 
+* Examples
+
+Example commands with output using *pyenv* and *env-diff*
+** See what changes after sourcing a file
+
+ Have you ever wondered what sourcing this or that file does to your environment.
+ Well this is the answer.  Simply do =env_diff= and a command and the output will
+ show the changes in the environment variables.
+
+ #+BEGIN_SRC sh :dir ~/Documents/GitHub/utils/misc :results output :exports code
+ env_diff source ~/new-env/bin/activate
+ #+END_SRC
+
+ #+BEGIN_SRC text :exports code
+ : ========== New variables ===========
+ : VIRTUAL_ENV=/Users/pcarphin/new-env
+ : ========== Deleted variables =======
+ : ========= Changed Vars =============
+ : PATH
+ :     ADDED:
+ :       /Users/pcarphin/new-env/bin
+ #+END_SRC
+
+ Notice that we only see what was added to path.  The environemnt analyser knows
+ that certain variables are lists.
+
+** Ignores doubles
+
+ The file =envvars= is full of =PATH=/some/dir:$PATH= lines so sourcing it twice
+ will make the path grow in size, but we don't care that the same directory
+ appears twice.  Therefore the environment analyser treats lists like path using
+ python sets and thus we don't see doubles in the diff report.
+
+ #+BEGIN_SRC sh :dir ~/Documents/GitHub/utils/misc :results output :exports code
+ env_diff source ~/.philconfig/FILES/envvars
+ #+END_SRC
+
+ #+BEGIN_SRC text
+ ========== New variables ===========
+ ========== Deleted variables =======
+ ========== Changed Vars =============
+ #+END_SRC
+
+*** Seeing the effect of envvars
+
+ If we want to see the effect of sourcing envvars, we can send the command
+ through ssh.  Since we're sending a command, our =bash_profile= and =bashrc=
+ will not get sourced (and =envvars= is sourced in my =bash_profile=)
+
+ #+BEGIN_SRC sh :dir ~/Documents/GitHub/utils/misc :results output :exports code
+ ssh localhost ~/Documents/GitHub/utils/bin/env_diff source ~/.philconfig/FILES/envvars
+ #+END_SRC
+
+ #+RESULTS:
+ #+begin_example
+ ========== New variables ===========
+ EDITOR=vim
+ NOTES_DIR=~/Dropbox/Notes/Notes_BUCKET
+ CDPATH=.
+        /Users/pcarphin
+        /Users/pcarphin/Documents
+        /Users/pcarphin/Documents/GitHub
+ FCEDIT=vim
+ LESS= -FX -R
+ LD_LIBRARY_PATH=/Users/pcarphin/.local/lib
+                 /Users/pcarphin/.local/openblas/lib/
+                 /Users/pcarphin/.local/libgit2/lib
+                 /usr/local/cuda/lib
+ DYLD_LIBRARY_PATH=/Users/pcarphin/.local/lib
+                   /Users/pcarphin/.local/openblas/lib
+                   /Developer/NVIDIA/CUDA-8.0/lib
+ ========== Deleted variables =======
+ ========= Changed Vars =============
+ PATH
+     ADDED:
+       /Users/pcarphin/Documents/GitHub/utils/bin
+       /Users/pcarphin/Library/Python/2.7/bin
+       /usr/local/openclcc/bin
+       /Developer/NVIDIA/CUDA-8.0/bin
+       /Users/pcarphin/.local/bin
+       /Library/Frameworks/Python.framework/Versions/3.5/bin
+       /usr/local/opt/apr/bin
+       /usr/lib64/openmpi/bin
+     KEPT:
+       /sbin
+       /usr/bin
+       /usr/sbin
+       /bin
+
+ #+end_example
+ 
+*** Effects of sourcing zshrc and zprofile
+
+ #+BEGIN_SRC sh :dir ~/Documents/GitHub/utils/misc :results output :exports code
+ ssh localhost ~/Documents/GitHub/utils/bin/env_diff source ~/.philconfig/zprofile \; source ~/.zshrc
+ #+END_SRC
+
+ #+RESULTS:
+ #+begin_example
+ ========== New variables ===========
+ LD_LIBRARY_PATH=/Users/pcarphin/.local/lib
+                 /Users/pcarphin/.local/openblas/lib/
+                 /Users/pcarphin/.local/libgit2/lib
+                 /usr/local/cuda/lib
+ DYLD_LIBRARY_PATH=/Users/pcarphin/.local/lib
+                   /Users/pcarphin/.local/openblas/lib
+                   /Developer/NVIDIA/CUDA-8.0/lib
+ PHILRC_ZPROFILE=.zprofile_sourced_at_2018-08-11_0126
+ EDITOR=vim
+ LESS= -FX -R
+ PHILCONFIG=/Users/pcarphin/.philconfig
+ CDPATH=.
+        /Users/pcarphin
+        /Users/pcarphin/Documents
+        /Users/pcarphin/Documents/GitHub
+ NOTES_DIR=~/Dropbox/Notes/Notes_BUCKET
+ FCEDIT=vim
+ ========== Deleted variables =======
+ ========= Changed Vars =============
+ PATH
+     ADDED:
+       /Users/pcarphin/Documents/GitHub/utils/bin
+       /usr/local/CrossPack-AVR/bin
+       /Users/pcarphin/Library/Python/2.7/bin
+       /Users/pcarphin/.local/bin
+       /usr/local/opt/apr/bin
+       /Library/Frameworks/Python.framework/Versions/3.5/bin
+       /Developer/NVIDIA/CUDA-8.0/bin
+       /opt/X11/bin
+       /usr/local/bin
+       /usr/local/openclcc/bin
+       /Library/TeX/texbin
+       /usr/lib64/openmpi/bin
+     KEPT:
+       /usr/sbin
+       /bin
+       /usr/bin
+       /sbin
+
+ #+end_example
+
+** Pretty print environment
+ #+BEGIN_SRC sh :dir ~/Documents/GitHub/utils/misc :results output :exports code
+ ./env_analyser.sh pretty
+ #+END_SRC
+
+ #+begin_example
+ Apple_PubSub_Socket_Render=/private/tmp/com.apple.launchd.uPTww2MeS7/Render
+ CDPATH=.
+        /Users/pcarphin
+        /Users/pcarphin/Documents
+        /Users/pcarphin/Documents/GitHub
+ COLORFGBG=7;0
+ COLORTERM=truecolor
+ DISPLAY=/private/tmp/com.apple.launchd.HvNY1kwxsC/org.macosforge.xquartz:0
+ EDITOR=vim
+ FCEDIT=vim
+ HOME=/Users/pcarphin
+ ITERM_PROFILE=Hotkey Window
+ ITERM_SESSION_ID=w0t0p0:76546DCD-611C-47D2-8F77-8E91077C21C3
+ LANG=en_US.UTF-8
+ LC_CTYPE=en_US.UTF-8
+ LESS= -FX -R -FX -R
+ LOGNAME=pcarphin
+ LSCOLORS=Gxfxcxdxbxegedabagacad
+ MANPATH=
+ NOTES_DIR=~/Dropbox/Notes/Notes_BUCKET
+ PAGER=less
+ PATH=/Users/pcarphin/.local/bin
+      /Users/pcarphin/Documents/GitHub/utils/bin
+      /Developer/NVIDIA/CUDA-8.0/bin
+      /Library/Frameworks/Python.framework/Versions/3.5/bin
+      /usr/lib64/openmpi/bin
+      /usr/local/openclcc/bin
+      /usr/local/opt/apr/bin
+      /Users/pcarphin/Library/Python/2.7/bin
+      /usr/local/bin
+      /usr/bin
+      /bin
+      /usr/sbin
+      /sbin
+      /opt/X11/bin
+      /usr/local/CrossPack-AVR/bin
+      /Library/TeX/texbin
+      /Users/pcarphin/.local/bin
+      /Users/pcarphin/Documents/GitHub/utils/bin
+      /Developer/NVIDIA/CUDA-8.0/bin
+      /Library/Frameworks/Python.framework/Versions/3.5/bin
+      /usr/lib64/openmpi/bin
+      /usr/local/openclcc/bin
+      /usr/local/opt/apr/bin
+      /Users/pcarphin/Library/Python/2.7/bin
+      /Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_10
+      /Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_10
+ PHILCONFIG=/Users/pcarphin/.philconfig
+ PHILRC_ZPROFILE=.zprofile_sourced_at_2018-08-07_2052
+ PHILRC_ZSHENV=.zshenv_sourced_at_2018-08-07_2052
+ PHILRC_ZSHRC=.zshrc_sourced_at_2018-08-07_2052
+ PWD=/Users/pcarphin/Documents/GitHub/utils/misc
+ SECURITYSESSIONID=186a7
+ SHELL=zsh
+ SHLVL=5
+ SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.fDpNgC3XtE/Listeners
+ TERM=dumb
+ TERM_PROGRAM=iTerm.app
+ TERM_PROGRAM_VERSION=3.2.0beta9
+ TERM_SESSION_ID=w0t0p0:76546DCD-611C-47D2-8F77-8E91077C21C3
+ TMPDIR=/var/folders/0k/d6bmjgqx4hl0tjpr7ss8nxk80000gn/T/
+ TMUX=/private/tmp/tmux-501/default,2052,0
+ TMUX_PANE=%0
+ USER=pcarphin
+ XPC_FLAGS=0x0
+ XPC_SERVICE_NAME=0
+ ZSH=/Users/pcarphin/.oh-my-zsh
+ _=/Users/pcarphin/.local/bin/python3
+ __CF_USER_TEXT_ENCODING=0x1F5:0x0:0x52
+ __PYVENV_LAUNCHER__=/Users/pcarphin/.local/bin/python3
+ #+end_example
+
+** Pretty print environment from login shell
+
+ Again, since we pass a command to the ssh command, our =bash_profile= doesn't
+ get sourced so our environment has a lot less stuff in it.
+
+ #+BEGIN_SRC sh :dir ~/Documents/GitHub/utils/misc :results output :exports code
+ ssh localhost ~/Documents/GitHub/utils/bin/env_analyser pretty
+ #+END_SRC
+
+ #+begin_example
+ HOME=/Users/pcarphin
+ LANG=en_US.UTF-8
+ LC_CTYPE=en_US.UTF-8
+ LOGNAME=pcarphin
+ MAIL=/var/mail/pcarphin
+ PATH=/usr/bin
+      /bin
+      /usr/sbin
+      /sbin
+ PHILRC_ZSHENV=.zshenv_sourced_at_2018-08-11_0023
+ PWD=/Users/pcarphin
+ SHELL=/bin/zsh
+ SHLVL=1
+ SSH_CLIENT=::1 56495 22 
+ SSH_CONNECTION=::1 56495 ::1 22
+ TMPDIR=/var/folders/0k/d6bmjgqx4hl0tjpr7ss8nxk80000gn/T/
+ USER=pcarphin
+ _=/usr/local/bin/python3
+ __CF_USER_TEXT_ENCODING=0x1F5:0x0:0x52
+ __PYVENV_LAUNCHER__=/usr/local/bin/python3
+ #+end_example
+
+** Comparing the two environments
+
+ To do that, I will have to do
+ #+BEGIN_SRC sh :dir ~/Documents/GitHub/utils/misc :results output :exports code
+ ssh localhost ~/Documents/GitHub/utils/bin/env_analyser dump | tee /tmp/env_ssh
+ ssh localhost ~/Documents/GitHub/utils/bin/env_analyser pretty
+ #+END_SRC
+
+ #+begin_example
+ ssh localhost ~/Documents/GitHub/utils/bin/env_analyser pretty
+ HOME=/Users/pcarphin
+ LANG=en_US.UTF-8
+ LC_COLLATE=C
+ LC_CTYPE=en_US.UTF-8
+ LOGNAME=pcarphin
+ MAIL=/var/mail/pcarphin
+ PATH=/usr/bin
+      /bin
+      /usr/sbin
+      /sbin
+ PHILRC_ZSHENV=.zshenv_sourced_at_2018-08-11_0103
+ PWD=/Users/pcarphin
+ SHELL=/bin/zsh
+ SHLVL=1
+ SSH_CLIENT=::1 56679 22 
+ SSH_CONNECTION=::1 56679 ::1 22
+ TMPDIR=/var/folders/0k/d6bmjgqx4hl0tjpr7ss8nxk80000gn/T/
+ USER=pcarphin
+ _=/usr/local/bin/python3
+ __CF_USER_TEXT_ENCODING=0x1F5:0x0:0x52
+ __PYVENV_LAUNCHER__=/usr/local/bin/python3
+ #+end_example
+
+ #+BEGIN_SRC sh :dir ~/Documents/GitHub/utils/misc :results output :exports code
+ env_analyser dump > /tmp/env_local
+ env_analyser pretty
+ #+END_SRC
+
+ #+begin_example
+
+ /tmp/env_local
+ env_analyser pretty
+ Apple_PubSub_Socket_Render=/private/tmp/com.apple.launchd.uPTww2MeS7/Render
+ CDPATH=.
+        /Users/pcarphin
+        /Users/pcarphin/Documents
+        /Users/pcarphin/Documents/GitHub
+ COLORFGBG=7;0
+ COLORTERM=truecolor
+ COLUMNS=91
+ DISPLAY=/private/tmp/com.apple.launchd.HvNY1kwxsC/org.macosforge.xquartz:0
+ EDITOR=vim
+ FCEDIT=vim
+ HOME=/Users/pcarphin
+ INSIDE_EMACS=26.1,comint
+ ITERM_PROFILE=Hotkey Window
+ ITERM_SESSION_ID=w0t0p0:15A4662D-B702-4EF8-8A18-B30DED082D94
+ LANG=en_US.UTF-8
+ LC_COLLATE=C
+ LC_CTYPE=en_US.UTF-8
+ LESS= -FX -R
+ LOGNAME=pcarphin
+ LSCOLORS=Gxfxcxdxbxegedabagacad
+ MANPATH=
+ NOTES_DIR=~/Dropbox/Notes/Notes_BUCKET
+ PAGER=less
+ PATH=/Users/pcarphin/.local/bin
+      /Users/pcarphin/Documents/GitHub/utils/bin
+      /Developer/NVIDIA/CUDA-8.0/bin
+      /Library/Frameworks/Python.framework/Versions/3.5/bin
+      /usr/lib64/openmpi/bin
+      /usr/local/openclcc/bin
+      /usr/local/opt/apr/bin
+      /Users/pcarphin/Library/Python/2.7/bin
+      /usr/local/bin
+      /usr/bin
+      /bin
+      /usr/sbin
+      /sbin
+      /opt/X11/bin
+      /usr/local/CrossPack-AVR/bin
+      /Library/TeX/texbin
+      /Users/pcarphin/.local/bin
+      /Users/pcarphin/Documents/GitHub/utils/bin
+      /Developer/NVIDIA/CUDA-8.0/bin
+      /Library/Frameworks/Python.framework/Versions/3.5/bin
+      /usr/lib64/openmpi/bin
+      /usr/local/openclcc/bin
+      /usr/local/opt/apr/bin
+      /Users/pcarphin/Library/Python/2.7/bin
+      I_edited_envvars_fiel
+      /Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_10
+      /Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_10
+ PHILCONFIG=/Users/pcarphin/.philconfig
+ PHILRC_ZPROFILE=.zprofile_sourced_at_2018-08-11_0027
+ PHILRC_ZSHENV=.zshenv_sourced_at_2018-08-11_0027
+ PHILRC_ZSHRC=.zshrc_sourced_at_2018-08-11_0027
+ PHIL_ENV=home
+ PWD=/Users/pcarphin/Documents/GitHub/utils/misc
+ SECURITYSESSIONID=186a7
+ SHELL=zsh
+ SHLVL=4
+ SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.fDpNgC3XtE/Listeners
+ TERM=dumb
+ TERMCAP=
+ TERM_PROGRAM=iTerm.app
+ TERM_PROGRAM_VERSION=3.2.0beta9
+ TERM_SESSION_ID=w0t0p0:15A4662D-B702-4EF8-8A18-B30DED082D94
+ TMPDIR=/var/folders/0k/d6bmjgqx4hl0tjpr7ss8nxk80000gn/T/
+ USER=pcarphin
+ XPC_FLAGS=0x0
+ XPC_SERVICE_NAME=0
+ ZSH=/Users/pcarphin/.oh-my-zsh
+ _=/usr/local/bin/python3
+ __CF_USER_TEXT_ENCODING=0x1F5:0x0:0x52
+ __PYVENV_LAUNCHER__=/usr/local/bin/python3
+ #+end_example
+
+ #+BEGIN_SRC sh :dir ~/Documents/GitHub/utils/misc :results output :exports code
+ env_analyser compare /tmp/env_ssh /tmp/env_local
+ #+END_SRC
+
+ #+begin_example
+ ========== New variables ===========
+ ZSH=/Users/pcarphin/.oh-my-zsh
+ TERM=dumb
+ SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.fDpNgC3XtE/Listeners
+ LESS= -FX -R
+ DISPLAY=/private/tmp/com.apple.launchd.HvNY1kwxsC/org.macosforge.xquartz:0
+ COLORFGBG=7;0
+ CDPATH=.
+        /Users/pcarphin
+        /Users/pcarphin/Documents
+        /Users/pcarphin/Documents/GitHub
+ PHILRC_ZSHRC=.zshrc_sourced_at_2018-08-11_0027
+ XPC_FLAGS=0x0
+ MANPATH=
+ LSCOLORS=Gxfxcxdxbxegedabagacad
+ XPC_SERVICE_NAME=0
+ COLUMNS=91
+ PHILCONFIG=/Users/pcarphin/.philconfig
+ FCEDIT=vim
+ PAGER=less
+ TERM_SESSION_ID=w0t0p0:15A4662D-B702-4EF8-8A18-B30DED082D94
+ PHIL_ENV=home
+ COLORTERM=truecolor
+ PHILRC_ZPROFILE=.zprofile_sourced_at_2018-08-11_0027
+ INSIDE_EMACS=26.1,comint
+ EDITOR=vim
+ TERM_PROGRAM=iTerm.app
+ NOTES_DIR=~/Dropbox/Notes/Notes_BUCKET
+ SECURITYSESSIONID=186a7
+ TERMCAP=
+ ITERM_SESSION_ID=w0t0p0:15A4662D-B702-4EF8-8A18-B30DED082D94
+ TERM_PROGRAM_VERSION=3.2.0beta9
+ ITERM_PROFILE=Hotkey Window
+ Apple_PubSub_Socket_Render=/private/tmp/com.apple.launchd.uPTww2MeS7/Render
+ ========== Deleted variables =======
+ SSH_CLIENT=::1 56678 22 
+ SSH_CONNECTION=::1 56678 ::1 22
+ MAIL=/var/mail/pcarphin
+ ========= Changed Vars =============
+ PATH
+     ADDED:
+       /usr/local/openclcc/bin
+       /Users/pcarphin/Documents/GitHub/utils/bin
+       /usr/local/opt/apr/bin
+       /Library/Frameworks/Python.framework/Versions/3.5/bin
+       /Users/pcarphin/Library/Python/2.7/bin
+       /usr/lib64/openmpi/bin
+       /usr/local/bin
+       /Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_10
+       /usr/local/CrossPack-AVR/bin
+       I_edited_envvars_fiel
+       /Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_10
+       /Users/pcarphin/.local/bin
+       /Library/TeX/texbin
+       /Developer/NVIDIA/CUDA-8.0/bin
+       /opt/X11/bin
+     KEPT:
+       /sbin
+       /usr/sbin
+       /bin
+       /usr/bin
+ #+end_example
+
+** Diff in reverse direction
+
+ Just to show how it displays the =PATH=
+
+ #+BEGIN_SRC sh :dir ~/Documents/GitHub/utils/misc :results output :exports code
+ env_analyser compare /tmp/env_local /tmp/env_ssh
+ #+END_SRC
+
+ #+RESULTS:
+ #+begin_example
+ ========== New variables ===========
+ MAIL=/var/mail/pcarphin
+ SSH_CLIENT=::1 56678 22 
+ SSH_CONNECTION=::1 56678 ::1 22
+ ========== Deleted variables =======
+ INSIDE_EMACS=26.1,comint
+ ITERM_SESSION_ID=w0t0p0:15A4662D-B702-4EF8-8A18-B30DED082D94
+ SECURITYSESSIONID=186a7
+ ZSH=/Users/pcarphin/.oh-my-zsh
+ XPC_SERVICE_NAME=0
+ PHILRC_ZSHRC=.zshrc_sourced_at_2018-08-11_0027
+ TERM_SESSION_ID=w0t0p0:15A4662D-B702-4EF8-8A18-B30DED082D94
+ NOTES_DIR=~/Dropbox/Notes/Notes_BUCKET
+ COLORTERM=truecolor
+ PHILCONFIG=/Users/pcarphin/.philconfig
+ COLUMNS=91
+ Apple_PubSub_Socket_Render=/private/tmp/com.apple.launchd.uPTww2MeS7/Render
+ PHILRC_ZPROFILE=.zprofile_sourced_at_2018-08-11_0027
+ FCEDIT=vim
+ LSCOLORS=Gxfxcxdxbxegedabagacad
+ TERM=dumb
+ ITERM_PROFILE=Hotkey Window
+ COLORFGBG=7;0
+ DISPLAY=/private/tmp/com.apple.launchd.HvNY1kwxsC/org.macosforge.xquartz:0
+ PAGER=less
+ CDPATH=.
+        /Users/pcarphin
+        /Users/pcarphin/Documents
+        /Users/pcarphin/Documents/GitHub
+ TERM_PROGRAM=iTerm.app
+ EDITOR=vim
+ TERMCAP=
+ TERM_PROGRAM_VERSION=3.2.0beta9
+ XPC_FLAGS=0x0
+ PHIL_ENV=home
+ MANPATH=
+ LESS= -FX -R
+ SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.fDpNgC3XtE/Listeners
+ ========= Changed Vars =============
+ PATH
+     KEPT:
+       /sbin
+       /usr/bin
+       /usr/sbin
+       /bin
+     DELETED:
+       /Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_10
+       /Users/pcarphin/.local/bin
+       /usr/local/bin
+       /Library/TeX/texbin
+       /Users/pcarphin/Documents/GitHub/utils/bin
+       /usr/lib64/openmpi/bin
+       /Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_10
+       /Users/pcarphin/Library/Python/2.7/bin
+       /usr/local/CrossPack-AVR/bin
+       I_edited_envvars_fiel
+       /usr/local/opt/apr/bin
+       /Developer/NVIDIA/CUDA-8.0/bin
+       /usr/local/openclcc/bin
+       /opt/X11/bin
+       /Library/Frameworks/Python.framework/Versions/3.5/bin
+ #+end_example
+
 * COMMANDS
 
 There are four commands /pretty/, /dump/, /compare/ and /get/.
@@ -49,7 +559,6 @@ Get the value of a variable.  /VAR/ is the variable name (no dollar sign).
 #+BEGIN_SRC sh
 pyenv get VAR
 #+END_SRC
-
 
 * CUSTOMISATION
 
