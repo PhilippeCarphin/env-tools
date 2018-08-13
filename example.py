@@ -1,4 +1,5 @@
 import pyenv
+import json
 
 '''
 ================================================================================
@@ -99,6 +100,6 @@ if __name__ == "__main__":
                 env_before = pyenv.PyEnv(json.loads(f.read()))
             with open(sys.argv[3], 'r') as f:
                 env_after = pyenv.PyEnv(json.loads(f.read()))
-            print(compare_envs(env_before, env_after))
+            print(pyenv.compare_envs(env_before, env_after))
     else:
         print(penv.pretty())
