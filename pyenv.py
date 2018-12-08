@@ -92,15 +92,15 @@ def compare_envs(env_before, env_after):
 
     report = []
     report.append('========== New variables ===========')
-    for var in new_vars:
+    for var in sorted(new_vars):
         report.append(env_after.get_pretty_str(var))
 
     report.append('========== Deleted variables =======')
-    for var in deleted_vars:
+    for var in sorted(deleted_vars):
         report.append(env_before.get_pretty_str(var))
 
     report.append('========= Changed Vars =============')
-    for var in common_vars:
+    for var in sorted(common_vars):
         before = env_before.env[var]
         after = env_after.env[var]
         if var in comparers:
