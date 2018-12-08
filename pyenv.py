@@ -18,6 +18,26 @@ def make_decorator(dictionary):
             return f
     return env_decorator
 
+# Functions taking string values and returning string, lists or dictionaries
+# Decorating a function with this decorator with argument list_of_vars
+# will register that function as the parser for the values of the variables in
+# the list list_of_vars
+parsers = {}
+parses = make_decorator(parsers)
+
+# Functions taking variable name and value and returning string
+stringizers= {}
+stringizes = make_decorator(stringizers)
+
+# Functions taking variable name and value and returning string
+pretty_stringizers = {}
+pretty_stringizes = make_decorator(pretty_stringizers)
+
+''' Dictionnary of comparison functions '''
+# Functions taking object before and object after and returning a string
+comparers = {}
+compares = make_decorator(comparers)
+
 class PyEnv:
     ''' Class that encapsulates a dictionnary of environment variables
     The keys are variable names and the values are the parsed string values
@@ -120,22 +140,6 @@ Same thing for the pretty_stringizes
 that process variables from string values and puts them back as strings in a
 pretty way or in a normal way'''
 
-# Functions taking string values and returning string, lists or dictionaries
-parsers = {}
-parses = make_decorator(parsers)
-
-# Functions taking variable name and value and returning string
-stringizers= {}
-stringizes = make_decorator(stringizers)
-
-# Functions taking variable name and value and returning string
-pretty_stringizers = {}
-pretty_stringizes = make_decorator(pretty_stringizers)
-
-''' Dictionnary of comparison functions '''
-# Functions taking object before and object after and returning a string
-comparers = {}
-compares = make_decorator(comparers)
 
 if __name__ == "__main__":
     penv = PyEnv()
