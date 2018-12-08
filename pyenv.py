@@ -66,14 +66,14 @@ class PyEnv:
         if key in stringizers:
             return stringizers[key](key, self.env[key])
         else:
-            return self.env[key]
+            return key + ' is not in environment'
 
     def get_pretty_str(self, key):
         ''' Get a pretty representation of the variable '''
         if key in pretty_stringizers:
             return pretty_stringizers[key](key, self.env[key])
         else:
-            return key + '=' + str(self.env[key])
+            return key + ' is not in environment'
 
     def json_dumps(self):
         ''' Dump the dictionary of variabl and their parsed values '''
