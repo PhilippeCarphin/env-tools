@@ -28,7 +28,7 @@ colon list variables
 colon_lists = ['CDPATH', 'PATH', 'LD_LIBRARY_PATH', 'DYLD_LIBRARY_PATH']
 @pyenv.parses(colon_lists)
 def process_colon_list(value):
-    return value.strip(':').split(':')
+    return list(sorted(value.strip(':').split(':')))
 
 @pyenv.stringizes(colon_lists)
 def colon_list_to_str(value):
