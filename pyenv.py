@@ -8,6 +8,7 @@ def make_decorator(dictionary):
     '''
     Creates a decorator that adds the function to a dictionary under the keys
     listed in args
+
     '''
     class env_decorator:
         def __init__(self, args):
@@ -61,17 +62,26 @@ class PyEnv:
         return str(self.env)
 
     def get_str(self, key):
-        ''' Returns a string representing the environment variable.  This string
-        may or may not be equal to the string value of the variable '''
-        if key in stringizers:
-            return stringizers[key](key, self.env[key])
+        '''Returns a string representing the environment variable. This string may or
+        may not be equal to the string value of the variable using function
+        registered as the 'stringizer' for that vaiable
+
+        '''
+        if key in self.env:
+            if key in stringizers:
+                return key + '=' + stringizers[key](self.env[key])
+            else:
+                return key + '=' + str(self.env[key])
         else:
             return key + ' is not in environment'
 
     def get_pretty_str(self, key):
         ''' Get a pretty representation of the variable '''
-        if key in pretty_stringizers:
-            return pretty_stringizers[key](key, self.env[key])
+        if key in self.env:
+            if key in pretty_stringizers:
+                return key + '=' + pretty_stringizers[key](self.env[key])
+            else:
+                return key + '=' + str(self.env[key])
         else:
             return key + ' is not in environment'
 
@@ -81,7 +91,7 @@ class PyEnv:
 
     def pretty(self):
         ''' Return a string formed by all the pretty printed variables '''
-        return '\n'.join(self.get_pretty_str(key) for key in self)
+        return '\n'.join(self.get_str(key) for key in self)
 
 def compare_envs(env_before, env_after):
     ''' Return a string giving a report of the differences between the two

@@ -16,8 +16,8 @@ def process_ssh_client(value):
 
 @pyenv.stringizes(['SSH_CLIENT'])
 @pyenv.pretty_stringizes(['SSH_CLIENT'])
-def pretty_str_ssh_client(var, value):
-    return var + '=' + ' '.join(value[k] for k in value)
+def pretty_str_ssh_client(value):
+    return ' '.join(value[k] for k in value)
 
 
 '''
@@ -31,14 +31,12 @@ def process_colon_list(value):
     return value.strip(':').split(':')
 
 @pyenv.stringizes(colon_lists)
-def colon_list_to_str(var, value):
-    return var + '=' + ':'.join(value)
+def colon_list_to_str(value):
+    return ':'.join(value)
 
 @pyenv.pretty_stringizes(colon_lists)
-def colon_list_to_pretty_str(var, value):
-    prefix = var + '='
-    joiner = '\n' + ' '*len(prefix)
-    return prefix + joiner.join(value)
+def colon_list_to_pretty_str(value):
+    return '\n    '.join(value)
 
 @pyenv.compares(colon_lists)
 def compare_lists(before, after):
@@ -67,8 +65,8 @@ def process_space_list(value):
 
 @pyenv.stringizes(space_lists)
 @pyenv.pretty_stringizes(space_lists)
-def space_list_to_str(var, value):
-    return var + '=' + ' '.join(value)
+def space_list_to_str(value):
+    return ' '.join(value)
 
 
 '''
