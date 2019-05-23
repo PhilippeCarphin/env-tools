@@ -91,7 +91,7 @@ class PyEnv:
 
     def pretty(self):
         ''' Return a string formed by all the pretty printed variables '''
-        return '\n'.join(self.get_pretty_str(key) for key in self)
+        return '\n'.join(self.get_str(key) for key in self)
 
 def compare_envs(env_before, env_after):
     ''' Return a string giving a report of the differences between the two
