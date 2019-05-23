@@ -1,9 +1,19 @@
 import pyenv
 import json
+''' This shows how you can specify what the tool does with various environment
+variables.
+
+I don't really like this idea anymore with the decorators.  Actually it is OK, but I'm actually not sure.
+
+I want to create a wrapper tool for manipulating the environment.  So naturally
+I came back to this code.  But now I think this code was only meant to look at
+the environment and create reports.
 
 '''
+'''
 ================================================================================
-SSH_CLIENT
+SSH_CLIENT : We split based on spaces and using documentation, assign tokens to
+their known meaning.
 ================================================================================
 '''
 @pyenv.parses(['SSH_CLIENT'])
@@ -24,6 +34,12 @@ def pretty_str_ssh_client(value):
 ================================================================================
 colon list variables
 ================================================================================
+Could this not just be replaced with
+    elif var in colon_lists:
+        ...
+        
+I'm actually having some trouble with this.  Any way, why would I even want to
+look at 
 '''
 colon_lists = ['CDPATH', 'PATH', 'LD_LIBRARY_PATH', 'DYLD_LIBRARY_PATH']
 @pyenv.parses(colon_lists)
