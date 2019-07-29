@@ -41,7 +41,10 @@ Could this not just be replaced with
 I'm actually having some trouble with this.  Any way, why would I even want to
 look at 
 '''
-colon_lists = ['CDPATH', 'PATH', 'LD_LIBRARY_PATH', 'DYLD_LIBRARY_PATH']
+colon_lists = ['CDPATH', 'PATH', 'LD_LIBRARY_PATH', 'DYLD_LIBRARY_PATH',
+        'CPATH', 'MIC_LD_LIBRARY_PATH', 'INFOPATH', 'OBJC_INCLUDE_PATH',
+        'NLSPATH', 'LIBRARY_PATH', 'SSM_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH',
+        'C_INCLUDE_PATH', 'MANPATH', 'EC_INCLUDE_PATH', 'EC_LD_LIBRARY_PATH']
 @pyenv.parses(colon_lists)
 def process_colon_list(value):
     return list(sorted(value.strip(':').split(':')))
