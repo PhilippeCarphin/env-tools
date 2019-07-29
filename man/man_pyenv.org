@@ -5,6 +5,9 @@
 A more powerful way of manipulating the environment for viewing and comparing
 environments.
 
+And more importantly *getting an informative report of the effect of a command
+on the environment*.
+
 * INSTALLATION
 Create links from anywhere in your path to 
 - =env_diff.sh= to compare environments
@@ -14,7 +17,7 @@ Create links from anywhere in your path to
 - =json_dumpenv=
 * EXAMPLE
 
-** See what changes after sourcing a file
+** See what changes from sourcing a file (This is the cool part)
 
  Have you ever wondered what sourcing this or that file does to your environment.
  Well this is the answer.  Simply do =env_diff= and a command and the output will
