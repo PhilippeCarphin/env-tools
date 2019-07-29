@@ -1,3 +1,5 @@
+#!/bin/bash
+
 this_file=$0
 while [ -L $this_file ] ; do
     this_link=$(readlink $this_file)
