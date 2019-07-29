@@ -5,15 +5,13 @@
 A more powerful way of manipulating the environment for viewing and comparing
 environments.
 
-* USAGE
-
-#+BEGIN_SRC sh
-pyenv pretty
-pyenv dump
-pyenv compare py_env1.json py_env2.json
-pyenv get VAR
-#+END_SRC
-
+* INSTALLATION
+Create links from anywhere in your path to 
+- =env_diff.sh= to compare environments
+- =pyenv.sh= to do all the things (Note: I found out that =pyenv= is actually a 
+  tool used to make Python environments, so watch out for a name clash if your
+  link is named =pyenv=)
+- =json_dumpenv=
 * EXAMPLE
 
 ** See what changes after sourcing a file
