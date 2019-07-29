@@ -1,4 +1,4 @@
-import pyenv
+import envtool
 import json
 ''' This shows how you can specify what the tool does with various environment
 variables.
@@ -16,7 +16,7 @@ SSH_CLIENT : We split based on spaces and using documentation, assign tokens to
 their known meaning.
 ================================================================================
 '''
-@pyenv.parses(['SSH_CLIENT'])
+@envtool.parses(['SSH_CLIENT'])
 def process_ssh_client(value):
     tokens = value.split(' ')
     return {"ip":tokens[0],
@@ -24,8 +24,8 @@ def process_ssh_client(value):
             "port2":tokens[2],
             "rest":"_".join(tokens[3:])}
 
-@pyenv.stringizes(['SSH_CLIENT'])
-@pyenv.pretty_stringizes(['SSH_CLIENT'])
+@envtool.stringizes(['SSH_CLIENT'])
+@envtool.pretty_stringizes(['SSH_CLIENT'])
 def pretty_str_ssh_client(value):
     return ' '.join(value[k] for k in value)
 
@@ -45,19 +45,19 @@ colon_lists = ['CDPATH', 'PATH', 'LD_LIBRARY_PATH', 'DYLD_LIBRARY_PATH',
         'CPATH', 'MIC_LD_LIBRARY_PATH', 'INFOPATH', 'OBJC_INCLUDE_PATH',
         'NLSPATH', 'LIBRARY_PATH', 'SSM_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH',
         'C_INCLUDE_PATH', 'MANPATH', 'EC_INCLUDE_PATH', 'EC_LD_LIBRARY_PATH']
-@pyenv.parses(colon_lists)
+@envtool.parses(colon_lists)
 def process_colon_list(value):
     return list(sorted(value.strip(':').split(':')))
 
-@pyenv.stringizes(colon_lists)
+@envtool.stringizes(colon_lists)
 def colon_list_to_str(value):
     return ':'.join(value)
 
-@pyenv.pretty_stringizes(colon_lists)
+@envtool.pretty_stringizes(colon_lists)
 def colon_list_to_pretty_str(value):
     return '\n    '.join(value)
 
-@pyenv.compares(colon_lists)
+@envtool.compares(colon_lists)
 def compare_lists(before, after):
     new = set(after) - set(before)
     gone = set(before) - set(after)
@@ -78,12 +78,12 @@ colon list variables
 ================================================================================
 '''
 space_lists = ['SSH_CONNECTION']
-@pyenv.parses(space_lists)
+@envtool.parses(space_lists)
 def process_space_list(value):
     return value.strip(' ').split(' ')
 
-@pyenv.stringizes(space_lists)
-@pyenv.pretty_stringizes(space_lists)
+@envtool.stringizes(space_lists)
+@envtool.pretty_stringizes(space_lists)
 def space_list_to_str(value):
     return ' '.join(value)
 
@@ -97,7 +97,7 @@ Take various actions based on command line arguments
 '''
 
 if __name__ == "__main__":
-    penv = pyenv.PyEnv()
+    penv = envtool.PyEnv()
     import sys
 
     if len(sys.argv) > 1:
@@ -114,9 +114,9 @@ if __name__ == "__main__":
             print(penv.get_pretty_str(sys.argv[2]))
         elif command == 'compare':
             with open(sys.argv[2], 'r') as f:
-                env_before = pyenv.PyEnv(json.loads(f.read()))
+                env_before = envtool.PyEnv(json.loads(f.read()))
             with open(sys.argv[3], 'r') as f:
-                env_after = pyenv.PyEnv(json.loads(f.read()))
-            print(pyenv.compare_envs(env_before, env_after))
+                env_after = envtool.PyEnv(json.loads(f.read()))
+            print(envtool.compare_envs(env_before, env_after))
     else:
         print(penv.pretty())
