@@ -119,8 +119,8 @@ def compare_envs(env_before, env_after):
                 report.append(var + '\n' + result)
         elif before != after:
             indent = '\n    '
-            report.append(var + indent + 'BEFORE=' + str(env_before.get_str(var))
-                                + indent + 'AFTER=' + str(env_after.get_str(var)))
+            report.append(var + indent +   'BEFORE: ' + str(env_before.get_str(var))
+                                + indent + ' AFTER: ' + str(env_after.get_str(var)))
     return '\n'.join(report)
 
 
