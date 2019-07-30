@@ -79,7 +79,7 @@ class PyEnv:
         ''' Get a pretty representation of the variable '''
         if key in self.env:
             if key in pretty_stringizers:
-                return key + '=' + pretty_stringizers[key](self.env[key])
+                return key + '=\n' + pretty_stringizers[key](self.env[key])
             else:
                 return key + '=' + str(self.env[key])
         else:

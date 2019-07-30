@@ -55,7 +55,7 @@ def colon_list_to_str(value):
 
 @envtool.pretty_stringizes(colon_lists)
 def colon_list_to_pretty_str(value):
-    return '\n    '.join(value)
+    return '    ' + '\n    '.join(value)
 
 @envtool.compares(colon_lists)
 def compare_lists(before, after):
