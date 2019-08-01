@@ -3,7 +3,7 @@
 import os
 
 def dir_contains(d,prefix):
-    print('dir_contains({}, {})'.format(d,prefix))
+    # print('dir_contains({}, {})'.format(d,prefix))
     for f in os.listdir(d):
         if f.startswith(prefix):
             return True
@@ -16,7 +16,7 @@ def find_in_env(f):
     return results
 
 def find_in_value(var, value,prefix):
-    print('find_in_value({}, {}, {})'.format(var, value, prefix))
+    # print('find_in_value({}, {}, {})'.format(var, value, prefix))
     results = []
     if ':' in value:
         dirs = value.split(':')
@@ -34,7 +34,7 @@ def find_in_value(var, value,prefix):
                     })
 
     else:
-        print("no colons in {}".format(value))
+        # print("no colons in {}".format(value))
         if os.path.isdir(var):
             for file in os.listdir(var):
                 if file.startswith(prefix):
