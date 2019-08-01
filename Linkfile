@@ -3,3 +3,5 @@ $HOME/.local/bin/jsenv           json_dumpenv
 $HOME/.local/bin/envdiff         env_diff.sh
 $HOME/.local/man/man1/pyenv.1    man/man_pyenv.man
 $HOME/.local/bin/envfind         env_find.py
+$HOME/.local/bin/pathfiles       path_files.py
+$HOME/.local/bin/pathdiff        path_diff.sh
