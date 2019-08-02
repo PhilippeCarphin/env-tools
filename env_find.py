@@ -2,10 +2,10 @@
 
 import os
 
-def dir_contains(d,prefix):
-    # print('dir_contains({}, {})'.format(d,prefix))
+def dir_contains(d,search_string):
+    # print('dir_contains({}, {})'.format(d,search_string))
     for f in os.listdir(d):
-        if f.startswith(prefix):
+        if search_string in f:
             return True
     return False
 
@@ -15,8 +15,8 @@ def find_in_env(f):
         results += find_in_value(var, os.environ[var], f)
     return results
 
-def find_in_value(var, value,prefix):
-    # print('find_in_value({}, {}, {})'.format(var, value, prefix))
+def find_in_value(var, value,search_string):
+    # print('find_in_value({}, {}, {})'.format(var, value, search_string))
     results = []
     if ':' in value:
         dirs = value.split(':')
@@ -26,7 +26,7 @@ def find_in_value(var, value,prefix):
                 continue
 
             for file in os.listdir(d):
-                if file.startswith(prefix):
+                if search_string in file:
                     results.append({
                         'file': file,
                         'location': d,
@@ -37,7 +37,7 @@ def find_in_value(var, value,prefix):
         # print("no colons in {}".format(value))
         if os.path.isdir(var):
             for file in os.listdir(var):
-                if file.startswith(prefix):
+                if file.startswith(search_string):
                     results.append({
                         'file': file,
                         'location': value,
