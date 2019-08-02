@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import envtool
 import json
 ''' This shows how you can specify what the tool does with various environment
