@@ -30,12 +30,24 @@ def excluded(d):
 
 def find_ssm_domains(starting_point, depth=0):
     if is_ssm_domain(starting_point):
-        print("I am an ssm domain {}".format(starting_point))
+        # print("I am an ssm domain {}".format(starting_point))
+        if needle in starting_point:
+            # print("DOMAIN FOUND: {}".format(starting_point))
+            domain = starting_point
+            for arch in filter(lambda d: d in architecture_names, os.listdir(domain)):
+                try:
+                    if exec_to_find in os.listdir(os.path.join(domain, arch, 'bin')):
+                        print("DOMAIN CONTAINING EXEC {} FOUND: {} (arch {})".format(exec_to_find, domain, arch))
+                except FileNotFoundError:
+                    pass
     else:
         for d in os.listdir(starting_point):
             subdir = os.path.join(starting_point, d)
-            print("directory : subdir = {}".format(subdir))
+            if d in ['.snapshot', 'etc', 'share', 'repo', 'PRIVATE', '__old'] or d.startswith('.'):
+                # print("Not recursing into excluded directory {}".format(subdir))
+                continue
             if os.path.isdir(subdir):
+                # print("recursing into subdir: {}".format(subdir))
                 try:
                     find_ssm_domains(subdir, depth+1)
                 except PermissionError:
@@ -83,7 +95,13 @@ def analyze_ssm_domain(dom, more=False):
     }
 
 
-from pprint import pprint
-pprint(analyze_ssm_domain(dom))
+# from pprint import pprint
+# pprint(analyze_ssm_domain(dom))
 
 # find_ssm_domains(dom)
+needle = ''
+exec_to_find = 'grib2_decode'
+import sys
+exec_to_find = sys.argv[1]
+starting_point = sys.argv[2]
+find_ssm_domains(starting_point)
