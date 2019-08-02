@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+PYTHON_EXEC=$(which python)
+
 is_relative_link(){
     [[ $1 != /* ]]
 }
@@ -27,9 +29,9 @@ this_dir=$(dirname "$(follow_links "${BASH_SOURCE[0]}")")
 env_before_file=/tmp/$(whoami)_env_before.txt
 env_after_file=/tmp/$(whoami)_env_after.txt
 
-"$this_dir"/pyenv.sh dump > "$env_before_file"
+"$PYTHON_EXEC" "$this_dir"/philenv.py dump > "$env_before_file"
 # shellcheck disable=SC2068
 eval $@
-"$this_dir"/pyenv.sh dump > "$env_after_file"
+"$PYTHON_EXEC" "$this_dir"/philenv.py dump > "$env_after_file"
 
-"$this_dir"/pyenv.sh compare "$env_before_file" "$env_after_file"
+"$PYTHON_EXEC" "$this_dir"/philenv.py compare "$env_before_file" "$env_after_file"

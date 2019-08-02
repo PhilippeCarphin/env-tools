@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
 
-# Full path to python3 may be necessary if you are doing things like
-# pathdiff export PATH=''
-# but if this is not where python is installed, then you will have to
-# modify this yourself
+# Remembering full path to python3 may be necessary if you are doing things like
+# $ pathdiff export PATH=''
 PYTHON3_EXEC=$(which python3)
 is_relative_link(){
     [[ $1 != /* ]]
