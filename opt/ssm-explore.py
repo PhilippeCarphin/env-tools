@@ -27,19 +27,40 @@ def excluded(d):
 
     return False
 
+def has_match(string, file_list):
+    for f in file_list:
+        if string in f:
+            return f
+    return None
 
 def find_ssm_domains(starting_point, depth=0):
     if is_ssm_domain(starting_point):
         # print("I am an ssm domain {}".format(starting_point))
         if needle in starting_point:
-            # print("DOMAIN FOUND: {}".format(starting_point))
+            #print("DOMAIN FOUND: {}".format(starting_point))
             domain = starting_point
             for arch in filter(lambda d: d in architecture_names, os.listdir(domain)):
-                try:
-                    if exec_to_find in os.listdir(os.path.join(domain, arch, 'bin')):
-                        print("DOMAIN CONTAINING EXEC {} FOUND: {} (arch {})".format(exec_to_find, domain, arch))
-                except FileNotFoundError:
-                    pass
+                #print("         DOING ARCH {}".format(arch))
+                d = os.path.join(domain, arch, 'bin')
+                if os.path.isdir(d):
+                    match = has_match(exec_to_find, os.listdir(d))
+                    if match:
+                        print("DOMAIN CONTAINING EXEC {} FOUND: {} (arch {})".format(match, domain, arch))
+                d = os.path.join(domain, arch, 'lib')
+                if os.path.isdir(d):
+                    match = has_match(exec_to_find, os.listdir(d))
+                    if match:
+                        print("DOMAIN CONTAINING LIB  {} FOUND: {} (arch {})".format(match, domain, arch))
+                d = os.path.join(domain, arch, 'lib', 'Linux_x86-64')
+                if os.path.isdir(d):
+                    match = has_match(exec_to_find, os.listdir(d))
+                    if match:
+                        print("DOMAIN CONTAINING LIB  {} FOUND: {} (arch {})".format(match, domain, arch))
+                d = os.path.join(d, 'intel-2016.1.156')
+                if os.path.isdir(d):
+                    match = has_match(exec_to_find, os.listdir(d))
+                    if match:
+                        print("DOMAIN CONTAINING LIB  {} FOUND: {} (arch {})".format(match, domain, arch))
     else:
         for d in os.listdir(starting_point):
             subdir = os.path.join(starting_point, d)
