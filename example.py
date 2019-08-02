@@ -100,7 +100,7 @@ Take various actions based on command line arguments
 '''
 
 if __name__ == "__main__":
-    penv = envtool.PyEnv()
+    penv = envtool.EnvWrapper()
     import sys
 
     if len(sys.argv) > 1:
@@ -117,9 +117,9 @@ if __name__ == "__main__":
             print(penv.get_pretty_str(sys.argv[2]))
         elif command == 'compare':
             with open(sys.argv[2], 'r') as f:
-                env_before = envtool.PyEnv(json.loads(f.read()))
+                env_before = envtool.EnvWrapper(json.loads(f.read()))
             with open(sys.argv[3], 'r') as f:
-                env_after = envtool.PyEnv(json.loads(f.read()))
+                env_after = envtool.EnvWrapper(json.loads(f.read()))
             print(envtool.compare_envs(env_before, env_after))
     else:
         print(penv.pretty())

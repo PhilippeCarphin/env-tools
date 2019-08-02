@@ -39,7 +39,7 @@ pretty_stringizes = make_decorator(pretty_stringizers)
 comparers = {}
 compares = make_decorator(comparers)
 
-class PyEnv:
+class EnvWrapper:
     ''' Class that encapsulates a dictionnary of environment variables
     The keys are variable names and the values are the parsed string values
     of the environment variables as defined by the 'processor' functions '''
@@ -152,7 +152,7 @@ pretty way or in a normal way'''
 
 
 if __name__ == "__main__":
-    penv = PyEnv()
+    penv = EnvWrapper()
     import sys
 
     if len(sys.argv) > 1:
@@ -169,9 +169,9 @@ if __name__ == "__main__":
             print(penv.get_pretty_str(sys.argv[2]))
         elif command == 'compare':
             with open(sys.argv[2], 'r') as f:
-                env_before = PyEnv(json.loads(f.read()))
+                env_before = EnvWrapper(json.loads(f.read()))
             with open(sys.argv[3], 'r') as f:
-                env_after = PyEnv(json.loads(f.read()))
+                env_after = EnvWrapper(json.loads(f.read()))
             print(compare_envs(env_before, env_after))
     else:
         print(penv.pretty())
