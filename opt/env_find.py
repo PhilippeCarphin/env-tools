@@ -11,13 +11,13 @@ def dir_contains(d,search_string):
             return True
     return False
 
-def find_in_env(f, type='contains'):
+def find_in_env(f, type='contains', custom_match=None):
     results = []
     for var in os.environ:
-        results += find_in_value(var, os.environ[var], f, type)
+        results += find_in_value(var, os.environ[var], f, type, custom_match)
     return results
 
-def find_in_value(var, value,search_string, type='endswith'):
+def find_in_value(var, value,search_string, type='endswith', custom_match=None):
     # print('find_in_value({}, {}, {})'.format(var, value, search_string))
     if type == 'contains':
         def match(needle, heystack):
@@ -30,8 +30,10 @@ def find_in_value(var, value,search_string, type='endswith'):
             so_regex = re.compile(r'\.so(.[0-9]+)*')
             res = so_regex.search(heystack)
             return res is not None
+    elif type == 'custom':
+        match = custom_match
     else:
-        pass
+        raise TypeError(f"'type parameter has unhandled value {type}")
 
     results = []
     if ':' in value:
