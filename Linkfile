@@ -3,3 +3,4 @@ $HOME/.local/bin/envfind         bin/envfind
 $HOME/.local/bin/envtool         bin/envtool
 $HOME/.local/bin/ssm-analyze     bin/ssm-analyze
 $HOME/.local/bin/ssm-explore     bin/ssm-explore
+$HOME/.local/bin/symbol-boss     bin/symbol-boss
