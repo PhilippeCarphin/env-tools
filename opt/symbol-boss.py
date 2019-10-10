@@ -23,6 +23,7 @@ def find_symbol_in_file(symbol, file):
         return []
 
 
+    print(f"Looking for symbols matching {symbol} in file {file}")
     for line in symbol_lines:
         # print(line)
         words = line.split()
