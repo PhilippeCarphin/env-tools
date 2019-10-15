@@ -23,4 +23,4 @@ follow_links()
 
 this_dir=$(dirname $(follow_links ${BASH_SOURCE[0]}))
 
-${this_dir}/envdiff source ssmuse-sh -d $1
+${this_dir}/env_diff.sh source ssmuse-sh -d $1
