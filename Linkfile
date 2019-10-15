@@ -1,7 +1,6 @@
-$HOME/.local/bin/philenv         philenv.py
-$HOME/.local/bin/jsenv           json_dumpenv
-$HOME/.local/bin/envdiff         env_diff.sh
-$HOME/.local/man/man1/pyenv.1    man/man_pyenv.man
-$HOME/.local/bin/envfind         env_find.py
-$HOME/.local/bin/pathfiles       path_files.py
-$HOME/.local/bin/pathdiff        path_diff.sh
+$HOME/.local/bin/envdiff         bin/envdiff
+$HOME/.local/bin/envfind         bin/envfind
+$HOME/.local/bin/envtool         bin/envtool
+$HOME/.local/bin/ssm-analyze     bin/ssm-analyze
+$HOME/.local/bin/ssm-explore     bin/ssm-explore
+$HOME/.local/bin/symbol-boss     bin/symbol-boss

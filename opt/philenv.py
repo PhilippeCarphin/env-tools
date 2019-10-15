@@ -48,7 +48,7 @@ colon_lists = [
     'CPATH', 'MIC_LD_LIBRARY_PATH', 'INFOPATH', 'OBJC_INCLUDE_PATH',
     'NLSPATH', 'LIBRARY_PATH', 'SSM_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH',
     'C_INCLUDE_PATH', 'MANPATH', 'EC_INCLUDE_PATH', 'EC_LD_LIBRARY_PATH',
-    'LIBPATH'
+    'LIBPATH', 'PYTHONPATH', 'TCL_LIBRARY'
 ]
 @envtool.parses(colon_lists)
 def process_colon_list(value):
