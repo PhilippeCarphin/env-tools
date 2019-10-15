@@ -17,7 +17,6 @@ follow_links()
         if is_relative_link "$file" ; then
             file="$curr_dir/$file"
         fi
-        ls -l "$file" 1>&2
     done
 
     echo "$file"
