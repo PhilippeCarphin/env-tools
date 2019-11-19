@@ -81,13 +81,16 @@ def compare_lists(before, after):
 
 @envtool.updates(colon_lists)
 def update_colon_list(before, after):
-    new = set(after) - set(before)
-    gone = set(before) - set(after)
-    kept = set(before).intersection(set(after))
-    if new:
-        return ':'.join(new)
+    if before:
+        new = set(after) - set(before)
+        gone = set(before) - set(after)
+        kept = set(before).intersection(set(after))
+        if new:
+            return ':'.join(new)
+        else:
+            return None
     else:
-        return None
+        return ':'.join(after)
 
 
 '''

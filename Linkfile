@@ -1,3 +1,4 @@
+$HOME/.local/bin/enveffect       bin/env-effect
 $HOME/.local/bin/envdiff         bin/envdiff
 $HOME/.local/bin/envfind         bin/envfind
 $HOME/.local/bin/envtool         bin/envtool
