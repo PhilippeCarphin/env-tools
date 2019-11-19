@@ -136,7 +136,14 @@ def resume_effect(env_before, env_after):
 
     effect = []
     for var in sorted(new_vars):
-        effect.append(f"export {var}={env_after[var]}")
+        if var == "CPATH":
+            print(f"CPATH in updaters: {'CPATH' in updaters}")
+        if var in updaters:
+            update = updaters[var](env_before[var], env_after[var])
+            if update:
+                effect.append(f"export {var}={updaters[var](env_before[var], env_after[var])}")
+        else:
+            effect.append(f"export {var}={env_after[var]}")
 
     for var in sorted(deleted_vars):
         effect.append(f"uneset {var}")
