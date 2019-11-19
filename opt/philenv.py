@@ -77,6 +77,17 @@ def compare_lists(before, after):
         result += '    DELETED:' + indent + indent.join(gone) + '\n'
     return result.strip('\n')
 
+@envtool.updates(colon_lists)
+def update_colon_list(before, after):
+    new = set(after) - set(before)
+    gone = set(before) - set(after)
+    kept = set(before).intersection(set(after))
+    if new:
+        return ':'.join(new)
+    else:
+        return None
+
+
 '''
 ================================================================================
 colon list variables
@@ -123,5 +134,12 @@ if __name__ == "__main__":
             with open(sys.argv[3], 'r') as f:
                 env_after = envtool.EnvWrapper(json.loads(f.read()))
             print(envtool.compare_envs(env_before, env_after))
+        elif command == 'update':
+            with open(sys.argv[2], 'r') as f:
+                env_before = envtool.EnvWrapper(json.loads(f.read()))
+            with open(sys.argv[3], 'r') as f:
+                env_after = envtool.EnvWrapper(json.loads(f.read()))
+            print("HELLO")
+            print(envtool.resume_effect(env_before, env_after))
     else:
         print(penv.pretty())

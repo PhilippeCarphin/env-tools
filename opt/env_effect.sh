@@ -33,4 +33,4 @@ env_after_file=/tmp/$(whoami)_env_after.txt
 eval $@
 "$PYTHON_EXEC" "$this_dir"/philenv.py dump > "$env_after_file"
 
-"$PYTHON_EXEC" "$this_dir"/philenv.py compare "$env_before_file" "$env_after_file"
+"$PYTHON_EXEC" "$this_dir"/philenv.py update "$env_before_file" "$env_after_file"

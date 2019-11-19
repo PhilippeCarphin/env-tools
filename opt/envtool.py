@@ -41,6 +41,9 @@ pretty_stringizes = make_decorator(pretty_stringizers)
 comparers = {}
 compares = make_decorator(comparers)
 
+updaters = {}
+updates = make_decorator(updaters)
+
 class EnvWrapper:
     ''' Class that encapsulates a dictionnary of environment variables
     The keys are variable names and the values are the parsed string values
@@ -126,6 +129,31 @@ def compare_envs(env_before, env_after):
     return '\n'.join(report)
 
 
+def resume_effect(env_before, env_after):
+    new_vars = set(env_after.env) - set(env_before.env)
+    deleted_vars = set(env_before.env) - set(env_after.env)
+    common_vars = set(env_before.env).intersection(set(env_after.env))
+
+    effect = []
+    for var in sorted(new_vars):
+        effect.append(f"export {var}={env_after[var]}")
+
+    for var in sorted(deleted_vars):
+        effect.append(f"uneset {var}")
+
+    for var in sorted(common_vars):
+        if var in updaters:
+            update = updaters[var](env_before[var], env_after[var])
+            if update:
+                effect.append(f"export {var}=${var}:{updaters[var](env_before[var], env_after[var])}")
+        else:
+            if env_before[var] != env_after[var]:
+                effect.append(f"export {var}={env_after[var]}")
+
+    return '\n'.join(effect)
+
+
+
 def penv_dict_from_environ_dict(d):
     ''' Transform the os.environ dictionary to the format that I use:
     Each variable can have a function that parsed the string value into a
@@ -175,5 +203,6 @@ if __name__ == "__main__":
             with open(sys.argv[3], 'r') as f:
                 env_after = EnvWrapper(json.loads(f.read()))
             print(compare_envs(env_before, env_after))
+
     else:
         print(penv.pretty())
