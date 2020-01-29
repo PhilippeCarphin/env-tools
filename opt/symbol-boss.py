@@ -23,7 +23,7 @@ def find_symbol_in_file(symbol, file):
         return []
 
 
-    print("Looking for symbols matching {} in file {}".format(symbol, file))
+    print("Looking for symbols matching '{}' in file '{}'".format(symbol, file))
     for line in symbol_lines:
         # print(line)
         words = line.split()
