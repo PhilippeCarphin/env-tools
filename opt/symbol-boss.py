@@ -23,7 +23,7 @@ def find_symbol_in_file(symbol, file):
         return []
 
 
-    print(f"Looking for symbols matching {symbol} in file {file}")
+    print("Looking for symbols matching {} in file {}".format(symbol, file))
     for line in symbol_lines:
         # print(line)
         words = line.split()
@@ -47,7 +47,7 @@ def find_symbol_in_file(symbol, file):
         if symbol in symbol_datum['symbol']:
             symbol_data.append(symbol_datum)
         else:
-            pass #  print(f'symbol {symbol} not in {symbol_datum["symbol"]}')
+            pass #  print('symbol {} not in {}'.format(symbol, symbol_datum["symbol"])
 
     return symbol_data
 

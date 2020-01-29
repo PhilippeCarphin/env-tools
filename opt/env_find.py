@@ -6,7 +6,12 @@ import re
 
 def dir_contains(d,search_string):
     # print('dir_contains({}, {})'.format(d,search_string))
-    for f in os.listdir(d):
+    try:
+        contents = os.listdir(d)
+    except OSError as e:
+        print(e)
+        return False
+    for f in contents:
         if search_string in f:
             return True
     return False
@@ -33,18 +38,23 @@ def find_in_value(var, value,search_string, type='endswith', custom_match=None):
     elif type == 'custom':
         match = custom_match
     else:
-        raise TypeError(f"'type parameter has unhandled value {type}")
+        raise TypeError("'type parameter has unhandled value {}".format(type))
 
     results = []
     if ':' in value:
-        # print(f'yes colons in {value}')
+        # print('yes colons in {}'.format(value))
         dirs = value.split(':')
 
         for d in dirs:
             if not os.path.isdir(d):
                 continue
+            try:
+                contents = os.listdir(d)
+            except OSError as e:
+                print(e)
+                continue
 
-            for file in os.listdir(d):
+            for file in contents:
                 if match(search_string, file):
                     results.append({
                         'file': file,

@@ -136,26 +136,24 @@ def resume_effect(env_before, env_after):
 
     effect = []
     for var in sorted(new_vars):
-        if var == "CPATH":
-            print(f"CPATH in updaters: {'CPATH' in updaters}")
         if var in updaters:
             update = updaters[var](env_before[var], env_after[var])
             if update:
-                effect.append(f"export {var}={updaters[var](env_before[var], env_after[var])}")
+                effect.append("export {}=\"{}\"".format(var,updaters[var](env_before[var], env_after[var]))
         else:
-            effect.append(f"export {var}={env_after[var]}")
+            effect.append("export {}=\"{}\"".format(env, env_after[var]))
 
     for var in sorted(deleted_vars):
-        effect.append(f"uneset {var}")
+        effect.append("uneset {}".format(var))
 
     for var in sorted(common_vars):
         if var in updaters:
             update = updaters[var](env_before[var], env_after[var])
             if update:
-                effect.append(f"export {var}=${var}:{updaters[var](env_before[var], env_after[var])}")
+                effect.append("export {var}=${var}:\"{}\"".format( var, var, updaters[var](env_before[var], env_after[var])))
         else:
             if env_before[var] != env_after[var]:
-                effect.append(f"export {var}={env_after[var]}")
+                effect.append("export {var}={env_after[var]}".format(var, env_after[var]))
 
     return '\n'.join(effect)
 
