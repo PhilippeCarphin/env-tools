@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+'''
+This class takes the environment and represents it in a way that can be
+specified by the user.  If no specification is given, the representation
+will be equivalent to the os.environ dictionary.
+
+The user 
+'''
+
 import os
 import json
 import subprocess
@@ -53,9 +61,8 @@ class EnvWrapper:
         environment dictionary from os.environ. '''
         if d is None:
             d = os.environ
-            self.env = penv_dict_from_environ_dict(d)
-        else:
-            self.env = d
+
+        self.env = self.from_dict(d)
 
     def __getitem__(self, key):
         return self.env[key]
@@ -98,6 +105,20 @@ class EnvWrapper:
         ''' Return a string formed by all the pretty printed variables '''
         return '\n'.join(self.get_str(key) for key in self)
 
+    @staticmethod
+    def from_dict(d):
+        ''' Transform the os.environ dictionary to the format that I use:
+        Each variable can have a function that parsed the string value into a
+        list or dictionary or what ever else you want. '''
+        representation = {}
+        for var, value in d.items():
+            if var in parsers.keys():
+                representation[var] = parsers[var](value)
+            else:
+                representation[var] = d[var]
+        return representation
+
+
 def compare_envs(env_before, env_after):
     ''' Return a string giving a report of the differences between the two
     environment objects '''
@@ -129,48 +150,6 @@ def compare_envs(env_before, env_after):
     return '\n'.join(report)
 
 
-def resume_effect(env_before, env_after):
-    new_vars = set(env_after.env) - set(env_before.env)
-    deleted_vars = set(env_before.env) - set(env_after.env)
-    common_vars = set(env_before.env).intersection(set(env_after.env))
-
-    effect = []
-    for var in sorted(new_vars):
-        if var in updaters:
-            update = updaters[var](env_before[var], env_after[var])
-            if update:
-                effect.append("export {}=\"{}\"".format(var,updaters[var](env_before[var], env_after[var]))
-        else:
-            effect.append("export {}=\"{}\"".format(env, env_after[var]))
-
-    for var in sorted(deleted_vars):
-        effect.append("uneset {}".format(var))
-
-    for var in sorted(common_vars):
-        if var in updaters:
-            update = updaters[var](env_before[var], env_after[var])
-            if update:
-                effect.append("export {var}=${var}:\"{}\"".format( var, var, updaters[var](env_before[var], env_after[var])))
-        else:
-            if env_before[var] != env_after[var]:
-                effect.append("export {var}={env_after[var]}".format(var, env_after[var]))
-
-    return '\n'.join(effect)
-
-
-
-def penv_dict_from_environ_dict(d):
-    ''' Transform the os.environ dictionary to the format that I use:
-    Each variable can have a function that parsed the string value into a
-    list or dictionary or what ever else you want. '''
-    penv_dict = {}
-    for var in d:
-        if var in parsers:
-            penv_dict[var] = parsers[var](d[var])
-        else:
-            penv_dict[var] = d[var]
-    return penv_dict
-
 '''
 ================================================================================
 Definitions of the processing and string functions
@@ -189,15 +168,28 @@ pretty way or in a normal way'''
 if __name__ == "__main__":
     penv = EnvWrapper()
     import sys
+    import argparse
+    from collections import namedtuple
+    Command = namedtuple('Command', ['command', 'file', 'other_file'])
+    if len(sys.argv) > 1:
+        command  = sys.argv[1]
+        if len(sys.argv) > 2:
+            first_file = sys.argv[2]
+            if len(sys.argv) > 3:
+                other_file = sys.argv[3]
+            else:
+                other_file = None
+        else:
+            first_file = None
 
     if len(sys.argv) > 1:
         command = sys.argv[1]
         if command == "dump":
             if len(sys.argv) > 2:
                 with open(sys.argv[2], 'w') as f:
-                    f.write(penv.json_dumps())
+                    f.write(penv.json_dumps(indent=4))
             else:
-                print(penv.json_dumps())
+                print(penv.json_dumps(indent=4))
         elif command == "pretty":
             print(penv.pretty())
         elif command == "get":
