@@ -4,21 +4,16 @@ import env_find
 import subprocess
 import re
 
-so_with_numbers_regex = re.compile(r'\.so(.[0-9]+)*')
+lib_with_numbers_regex = re.compile(r'\.(so|dylib|a)(\.[0-9]+)*')
 
 def is_some_kind_of_lib(_, filename):
-
-    if filename.endswith('.a') \
-            or so_with_numbers_regex.search(filename) \
-            or filename.endswith('.dylib'):
-        return True
-
+    return (lib_with_numbers_regex.search(filename) is not None)
 
 def find_symbol_in_file(symbol, file):
     symbol_data = []
 
     try:
-        symbol_lines = nm_output(file).split('\n')[2:]
+        symbol_lines = nm_output(file).splitlines[2:]
     except subprocess.CalledProcessError:
         return []
 
@@ -47,7 +42,8 @@ def find_symbol_in_file(symbol, file):
         if symbol in symbol_datum['symbol']:
             symbol_data.append(symbol_datum)
         else:
-            pass #  print('symbol {} not in {}'.format(symbol, symbol_datum["symbol"])
+            #  print(f'symbol {symbol} not in {symbol_datum["symbol"]}')
+            pass
 
     return symbol_data
 
@@ -61,7 +57,7 @@ def nm_output(file):
     # of piping through grep, I left this as is.  When I
     # went to put it back to just ["nm", file], it
     return subprocess.check_output([
-        "bash", "-c", "nm --demangle " + file
+        "bash", "-c", "nm --demangle -D " + file
     ]).decode('utf-8')
 
 def find_symbol_in_env(symbol):
