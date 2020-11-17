@@ -11,7 +11,9 @@ I want to create a wrapper tool for manipulating the environment.  So naturally
 I came back to this code.  But now I think this code was only meant to look at
 the environment and create reports.
 
+
 '''
+phil_repr = envtool.EnvWrapper()
 '''
 ================================================================================
 SSH_CLIENT : We split based on spaces and using documentation, assign tokens to
@@ -90,16 +92,16 @@ def update_colon_list(before, after):
 
 '''
 ================================================================================
-colon list variables
+SSH_CONNECTION
 ================================================================================
 '''
-space_lists = ['SSH_CONNECTION']
-@envtool.parses(space_lists)
+ssh_connection = ['SSH_CONNECTION']
+@envtool.parses(ssh_connection)
 def process_space_list(value):
     return value.strip(' ').split(' ')
 
-@envtool.stringizes(space_lists)
-@envtool.pretty_stringizes(space_lists)
+@envtool.stringizes(ssh_connection)
+@envtool.pretty_stringizes(ssh_connection)
 def space_list_to_str(value):
     return ' '.join(value)
 
@@ -107,7 +109,6 @@ def space_list_to_str(value):
 '''
 ================================================================================
 ================================== MAIN PART ===================================
-
 Take various actions based on command line arguments
 ================================================================================
 '''
