@@ -143,7 +143,6 @@ if __name__ == "__main__":
                 env_before = envtool.EnvWrapper(json.loads(f.read()))
             with open(sys.argv[3], 'r') as f:
                 env_after = envtool.EnvWrapper(json.loads(f.read()))
-            print("HELLO")
             print(envtool.resume_effect(env_before, env_after))
     else:
         print(penv.pretty())
