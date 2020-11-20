@@ -106,7 +106,7 @@ class EnvWrapper:
 
     def pretty(self):
         ''' Return a string formed by all the pretty printed variables '''
-        return '\n'.join(self.get_str(key) for key in self)
+        return '\n'.join(self.get_pretty_str(key) for key in self)
 
     def to_file(self, filename):
         with open(filename, 'w') as f:
@@ -184,16 +184,15 @@ def env_diff(command):
     eval {command} 1>&2
     {sys.executable} -c 'import json, os ; print(json.dumps(dict(os.environ)))'
     '''
-    print(after_script)
     result = subprocess.run(after_script, shell=True, universal_newlines=True, stdout=subprocess.PIPE, check=True)
 
     env_after = EnvWrapper.from_environment_dict(json.loads(result.stdout))
 
-    print(compare_envs(env_before, env_after))
     return {
         'before': env_before,
         'after': env_after
     }
+
 
 '''
 ================================================================================

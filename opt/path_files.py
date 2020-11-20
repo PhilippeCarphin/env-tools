@@ -11,17 +11,11 @@ def get_files_in_dirs(dirs, exec_only=True):
     for d in dirs:
         if not os.path.isdir(d):
             continue
-
-        def is_executable(f):
-            return os.access(os.path.join(d, f), os.X_OK) and not f.startswith('.nfs')
-
+        is_executable = lambda f: os.access(os.path.join(d, f), os.X_OK) and not f.startswith('.nfs')
         if exec_only:
-            files += list(
-                filter(is_executable, os.listdir(d))
-            )
+            files += list(filter(is_executable, os.listdir(d)))
         else:
             files += os.listdir(d)
-
     return files
 
 def get_files_in_dirs_with_locations(dirs, exec_only=True):

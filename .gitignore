@@ -4,3 +4,4 @@ ACTIVE
 *.man
 *.html
 *.pyc
+.vscode
