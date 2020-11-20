@@ -49,22 +49,30 @@ colon_lists = [
     'CDPATH', 'PATH', 'LD_LIBRARY_PATH', 'DYLD_LIBRARY_PATH',
     'CPATH', 'MIC_LD_LIBRARY_PATH', 'INFOPATH', 'OBJC_INCLUDE_PATH',
     'NLSPATH', 'LIBRARY_PATH', 'SSM_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH',
-    'C_INCLUDE_PATH', 'MANPATH', 'EC_INCLUDE_PATH', 'EC_LD_LIBRARY_PATH',
+    'C_INCLUDE_PATH', 'MANPATH', 'EC_INCLUDE_PATH',
     'LIBPATH', 'PYTHONPATH', 'TCL_LIBRARY'
 ]
+space_lists = ['EC_LD_LIBRARY_PATH']
 @envtool.parses(colon_lists)
 def process_colon_list(value):
     return list(sorted(value.strip(':').split(':')))
+@envtool.parses(space_lists)
+def process_space_list(value):
+    return list(sorted(value.strip().split()))
 
 @envtool.stringizes(colon_lists)
 def colon_list_to_str(value):
     return ':'.join(value)
+@envtool.stringizes(space_lists)
+def space_list_to_str(value):
+    return ' '.join(value)
+
 
 @envtool.pretty_stringizes(colon_lists)
 def colon_list_to_pretty_str(value):
     return '    ' + '\n    '.join(value)
 
-@envtool.compares(colon_lists)
+@envtool.compares(colon_lists + space_lists)
 def compare_lists(before, after):
     new = set(after) - set(before)
     gone = set(before) - set(after)
