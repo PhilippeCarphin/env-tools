@@ -183,6 +183,8 @@ def env_diff(command):
     after_script = f'''
     eval {command} 1>&2
     {sys.executable} -c 'import json, os ; print(json.dumps(dict(os.environ)))'
+    # Redirect 1 to 2 in case the command has set up traps that may print to stdout
+    exec 1>&2
     '''
     result = subprocess.run(after_script, shell=True, universal_newlines=True, stdout=subprocess.PIPE, check=True)
 
