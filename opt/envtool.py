@@ -5,10 +5,11 @@ This class takes the environment and represents it in a way that can be
 specified by the user.  If no specification is given, the representation
 will be equivalent to the os.environ dictionary.
 
-The user 
+The user
 '''
 
 import os
+import sys
 import json
 import subprocess
 from pprint import pprint
@@ -56,14 +57,15 @@ class EnvWrapper:
     ''' Class that encapsulates a dictionnary of environment variables
     The keys are variable names and the values are the parsed string values
     of the environment variables as defined by the 'processor' functions '''
-    def __init__(self, d=None):
+    def __init__(self, d=None, representation=None):
         ''' Create an instance from an already made dictionary or from the
         environment dictionary from os.environ. '''
-        if d is None:
-            d = os.environ
-            self.env = self.from_dict(d)
+        if representation:
+            self.env=representation
+        elif d:
+            self.env=self.decode_environment_dict(d)
         else:
-            self.env = d
+            self.env = self.decode_environment_dict(os.environ)
 
     def __getitem__(self, key):
         return self.env[key]
@@ -106,8 +108,12 @@ class EnvWrapper:
         ''' Return a string formed by all the pretty printed variables '''
         return '\n'.join(self.get_str(key) for key in self)
 
+    def to_file(self, filename):
+        with open(filename, 'w') as f:
+            json_dump(f, self.env, indent=4)
+
     @staticmethod
-    def from_dict(d):
+    def decode_environment_dict(d):
         ''' Transform the os.environ dictionary to the format that I use:
         Each variable can have a function that parsed the string value into a
         list or dictionary or what ever else you want. '''
@@ -120,10 +126,16 @@ class EnvWrapper:
         return representation
 
     @classmethod
+    def from_environment_dict(cls, d=None):
+        if not d:
+            d = os.environ
+        return cls(representation=cls.decode_environment_dict(d))
+
+    @classmethod
     def from_file(cls, filename):
         with open(filename, 'r') as f:
             representation = json.load(f)
-        new_guy = cls(representation=representation)
+        return cls(representation=representation)
 
 
 def compare_envs(env_before, env_after):
@@ -156,6 +168,32 @@ def compare_envs(env_before, env_after):
                                 + indent + ' AFTER: ' + str(env_after.get_str(var)))
     return '\n'.join(report)
 
+
+def env_diff(command):
+    # We could get this envrionment by just doing
+    # env_before = envtool.EnvWrapper.from_environment_dict()
+    # but we do both the same way so that things like SHLVL will match up
+    # in both
+    before_script = f'''
+    {sys.executable} -c 'import json, os ; print(json.dumps(dict(os.environ)))'
+    '''
+    result = subprocess.run(before_script, shell=True, universal_newlines=True, stdout=subprocess.PIPE, check=True)
+    env_before = EnvWrapper.from_environment_dict(json.loads(result.stdout))
+
+    after_script = f'''
+    eval {command} 1>&2
+    {sys.executable} -c 'import json, os ; print(json.dumps(dict(os.environ)))'
+    '''
+    print(after_script)
+    result = subprocess.run(after_script, shell=True, universal_newlines=True, stdout=subprocess.PIPE, check=True)
+
+    env_after = EnvWrapper.from_environment_dict(json.loads(result.stdout))
+
+    print(compare_envs(env_before, env_after))
+    return {
+        'before': env_before,
+        'after': env_after
+    }
 
 '''
 ================================================================================

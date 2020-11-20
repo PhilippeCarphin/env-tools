@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import subprocess
 import envtool
 import json
 ''' This shows how you can specify what the tool does with various environment
@@ -10,10 +11,9 @@ I don't really like this idea anymore with the decorators.  Actually it is OK, b
 I want to create a wrapper tool for manipulating the environment.  So naturally
 I came back to this code.  But now I think this code was only meant to look at
 the environment and create reports.
-
-
 '''
-phil_repr = envtool.EnvWrapper()
+
+
 '''
 ================================================================================
 SSH_CLIENT : We split based on spaces and using documentation, assign tokens to
@@ -41,9 +41,9 @@ colon list variables
 Could this not just be replaced with
     elif var in colon_lists:
         ...
-        
+
 I'm actually having some trouble with this.  Any way, why would I even want to
-look at 
+look at
 '''
 colon_lists = [
     'CDPATH', 'PATH', 'LD_LIBRARY_PATH', 'DYLD_LIBRARY_PATH',
@@ -116,9 +116,15 @@ Take various actions based on command line arguments
 ================================================================================
 '''
 
+def env_diff_cmd(args):
+    pass
+
+
 if __name__ == "__main__":
-    penv = envtool.EnvWrapper()
     import sys
+    env_diff(sys.argv[1:])
+    quit()
+    penv = envtool.EnvWrapper.from_environment_dict()
 
     if len(sys.argv) > 1:
         command = sys.argv[1]
@@ -133,17 +139,16 @@ if __name__ == "__main__":
         elif command == "get":
             print(penv.get_pretty_str(sys.argv[2]))
         elif command == 'compare':
-            with open(sys.argv[2], 'r') as f:
-                env_before = envtool.EnvWrapper(json.loads(f.read()))
-            with open(sys.argv[3], 'r') as f:
-                env_after = envtool.EnvWrapper(json.loads(f.read()))
+            env_before = envtool.EnvWrapper.from_file(sys.argv[2])
+            env_after = envtool.EnvWrapper.from_file(sys.argv[3])
             print(envtool.compare_envs(env_before, env_after))
         elif command == 'update':
             # with open(sys.argv[2], 'r') as f:
             #     env_before = envtool.EnvWrapper(json.loads(f.read()))
             env_before = envtool.EnvWrapper.from_file(sys.argv[2])
-            with open(sys.argv[3], 'r') as f:
-                env_after = envtool.EnvWrapper(json.loads(f.read()))
+            env_after = envtool.EnvWrapper.from_file(sys.argv[3])
+            # with open(sys.argv[3], 'r') as f:
+            #     env_after = envtool.EnvWrapper(representation=json.loads(f.read()))
             print(envtool.resume_effect(env_before, env_after))
     else:
         print(penv.pretty())
