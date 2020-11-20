@@ -61,8 +61,9 @@ class EnvWrapper:
         environment dictionary from os.environ. '''
         if d is None:
             d = os.environ
-
-        self.env = self.from_dict(d)
+            self.env = self.from_dict(d)
+        else:
+            self.env = d
 
     def __getitem__(self, key):
         return self.env[key]
@@ -117,6 +118,12 @@ class EnvWrapper:
             else:
                 representation[var] = d[var]
         return representation
+
+    @classmethod
+    def from_file(cls, filename):
+        with open(filename, 'r') as f:
+            representation = json.load(f)
+        new_guy = cls(representation=representation)
 
 
 def compare_envs(env_before, env_after):

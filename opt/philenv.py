@@ -139,8 +139,9 @@ if __name__ == "__main__":
                 env_after = envtool.EnvWrapper(json.loads(f.read()))
             print(envtool.compare_envs(env_before, env_after))
         elif command == 'update':
-            with open(sys.argv[2], 'r') as f:
-                env_before = envtool.EnvWrapper(json.loads(f.read()))
+            # with open(sys.argv[2], 'r') as f:
+            #     env_before = envtool.EnvWrapper(json.loads(f.read()))
+            env_before = envtool.EnvWrapper.from_file(sys.argv[2])
             with open(sys.argv[3], 'r') as f:
                 env_after = envtool.EnvWrapper(json.loads(f.read()))
             print(envtool.resume_effect(env_before, env_after))
