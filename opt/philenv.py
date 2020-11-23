@@ -31,7 +31,8 @@ def process_ssh_client(value):
 @envtool.stringizes(['SSH_CLIENT'])
 @envtool.pretty_stringizes(['SSH_CLIENT'])
 def pretty_str_ssh_client(value):
-    return ' '.join(value[k] for k in value)
+    print("PISS BUCKET")
+    return ' '.join(value[k] for k in value).strip()
 
 
 '''
@@ -55,6 +56,8 @@ colon_lists = [
 space_lists = ['EC_LD_LIBRARY_PATH']
 @envtool.parses(colon_lists)
 def process_colon_list(value):
+    if value == '':
+        return []
     return list(sorted(value.strip(':').split(':')))
 @envtool.parses(space_lists)
 def process_space_list(value):
@@ -62,6 +65,7 @@ def process_space_list(value):
 
 @envtool.stringizes(colon_lists)
 def colon_list_to_str(value):
+    print(f'[colon_list_to_str]: value = {value}')
     return ':'.join(value)
 @envtool.stringizes(space_lists)
 def space_list_to_str(value):

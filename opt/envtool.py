@@ -137,6 +137,54 @@ class EnvWrapper:
             representation = json.load(f)
         return cls(representation=representation)
 
+    def get_declaration(self, var):
+        real_value = self.get_str
+        if var in stringizers:
+            real_value = stringizers[var](self.env[var])
+        else:
+            real_value = str(self.env[var])
+        return f'{var}="{real_value}"'
+
+    def get_unsetting(self, var):
+        return f'unset {var}'
+
+    def get_change(self, var, before, after):
+        if isinstance(before, list):
+            if after:
+                new_elements = set(after) - set(before)
+                return f"{var}=\"${var}:{':'.join(new_elements)}\""
+            else:
+                return f'{var}=""'
+        elif var in stringizers:
+            return f'{var}="{stringizers[var](after)}"'
+        else:
+            return f'{var}="{after}"'
+
+
+def get_effect(env_before, env_after):
+    ''' Return a string giving a report of the differences between the two
+    environment objects '''
+    new_vars = set(env_after.env) - set(env_before.env)
+    deleted_vars = set(env_before.env) - set(env_after.env)
+    common_vars = set(env_before.env).intersection(set(env_after.env))
+
+    report = []
+    report.append('========== New variables ===========')
+    for var in sorted(new_vars):
+        report.append(env_after.get_declaration(var))
+
+    report.append('========== Deleted variables =======')
+    for var in sorted(deleted_vars):
+        report.append(env_before.get_unsetting(var))
+
+    report.append('========= Changed Vars =============')
+    for var in sorted(common_vars):
+        before = env_before.env[var]
+        after = env_after.env[var]
+        if before != after:
+            report.append(env_before.get_change(var, before, after))
+    return '\n'.join(report)
+
 
 def compare_envs(env_before, env_after):
     ''' Return a string giving a report of the differences between the two

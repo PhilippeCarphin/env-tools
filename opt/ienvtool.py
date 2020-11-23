@@ -6,6 +6,8 @@ import sys
 import os
 from pprint import pprint
 from philenv import *
+from env_find import find_in_env_command
+from symbolboss import find_symbol_command
 
 def get_execs_from_path(path):
     is_executable = lambda f: os.access(os.path.join(d, f), os.X_OK) and not f.startswith('.nfs')
@@ -41,11 +43,8 @@ def diff_command(args):
     print(f'args.posargs : {args.posargs}')
     envs = envtool.env_diff(' '.join(args.posargs))
     if args.shell:
-        envtool.get_effect(envs['before'], envs['after'])
+        print(envtool.get_effect(envs['before'], envs['after']))
     elif args.executables:
-        # execs_before = get_execs_from_path(envs['before']['PATH'])
-        # result = envtool.comparers['PATH'](envs['before']['PATH'], envs['after']['PATH'])
-        # print(result)
         path_diff(envs['before']['PATH'], envs['after']['PATH'])
     else:
         print(envtool.compare_envs(envs['before'], envs['after']))
@@ -68,16 +67,27 @@ diff_parser.add_argument('--executables', action='store_true')
 diff_parser.add_argument('posargs', nargs='*')
 diff_parser.set_defaults(func=diff_command)
 
-find_symbol_parser = sp.add_parser('find-symbol')
-find_symbol_parser.set_defaults(func=lambda args : print(f'find-symbol : {args}'))
-
 get_parser = sp.add_parser('get')
 get_parser.add_argument('posargs', nargs='*')
 get_parser.set_defaults(func=get_command)
 
+find_parser = sp.add_parser('find', description="Find files in directories mentionned in environment variables")
+find_parser.add_argument('needle', help="filename or regex")
+find_parser.add_argument('--exact', action='store_true')
+find_parser.set_defaults(func=find_in_env_command)
+
+find_symbol_parser = sp.add_parser('find-symbol')
+find_symbol_parser.add_argument('needle')
+find_symbol_parser.add_argument('--exact', action='store_true')
+find_symbol_parser.add_argument('--demangle', action='store_true')
+find_symbol_parser.add_argument('--nice', action='store_true')
+find_symbol_parser.set_defaults(func=find_symbol_command)
 
 args = p.parse_args()
 
-args.func(args)
+try:
+    args.func(args)
+except KeyboardInterrupt:
+    pass
 
-print(f"sys.argv[0] = {sys.argv[0]}")
+# print(f"sys.argv[0] = {sys.argv[0]}")
