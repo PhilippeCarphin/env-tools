@@ -1,6 +1,7 @@
 
 from pathdiff import path_diff
 import json
+import textwrap
 import envtool
 import sys
 import subprocess
@@ -50,14 +51,17 @@ def compare_envs(env_before, env_after):
     for var in sorted(common_vars):
         before = env_before.env[var]
         after = env_after.env[var]
-        if var in comparers:
-            result = comparers[var](before, after)
+        if var in envtool.comparers:
+            result = envtool.comparers[var](before, after)
             if result != '':
                 report.append(var + '\n' + result)
         elif before != after:
-            indent = '\n    '
-            report.append(var + indent +   'BEFORE: ' + str(env_before.get_str(var))
-                                + indent + ' AFTER: ' + str(env_after.get_str(var)))
+            report.append(textwrap.dedent(f'''
+                {var}
+                    BEFORE: {env_before.get_str(var)}
+                     AFTER: {env_after.get_str(var)}
+                ''').strip()
+            )
     return '\n'.join(report)
 
 

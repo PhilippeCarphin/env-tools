@@ -17,6 +17,10 @@ def dir_contains(d,search_string):
     return False
 
 def find_in_env(f, type='contains', custom_match=None):
+    for a in find_in_env_gen(f, type, custom_match):
+        print(a)
+
+def find_in_env_gen(f, type='contains', custom_match=None):
     for var in os.environ:
         yield from find_in_value(var, os.environ[var], f, type, custom_match)
 
