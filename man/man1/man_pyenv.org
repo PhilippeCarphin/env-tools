@@ -1,4 +1,5 @@
 #+TITLE: Environment Analyser
+#+EXPORT_FILE_NAME: envtool.1.man
 
 * DESCRIPTION
 
