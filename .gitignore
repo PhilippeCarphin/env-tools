@@ -5,3 +5,4 @@ ACTIVE
 *.html
 *.pyc
 .vscode
+localinstall
