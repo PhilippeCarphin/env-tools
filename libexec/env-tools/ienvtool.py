@@ -8,12 +8,12 @@ from env_find import find_in_env_command
 from symbolboss import find_symbol_command
 
 
-p = argparse.ArgumentParser()
+p = argparse.ArgumentParser(description="Analyze current computing environment and effect of certain commands on the environemnt.  (Run envtool SUBCOMMAND --help for help on subcommands)")
 sp = p.add_subparsers()
 
 diff_parser = sp.add_parser('diff')
-diff_parser.add_argument('--shell', choices=['bash', 'zsh', 'fish'])
-diff_parser.add_argument('--executables', action='store_true')
+diff_parser.add_argument('--shell', choices=['bash', 'zsh', 'fish'], help="Output shell code for selected shell representing the environment change")
+diff_parser.add_argument('--executables', action='store_true', help="Compare executables findable through PATH before and after command instead of comparing environements")
 diff_parser.add_argument('posargs', nargs='*')
 diff_parser.set_defaults(command=diff_command)
 
