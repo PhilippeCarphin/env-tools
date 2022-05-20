@@ -178,7 +178,7 @@ pretty way or in a normal way'''
 
 
 def get_command(args):
-    env = envtool.EnvWrapper.from_environment_dict()
+    env = EnvWrapper.from_environment_dict()
     if args.posargs:
         for var in args.posargs:
             print(env.get_pretty_str(var))
