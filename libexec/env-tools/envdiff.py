@@ -7,8 +7,13 @@ import sys
 import subprocess
 
 def get_effect(env_before, env_after):
-    ''' Return a string giving a report of the differences between the two
-    environment objects '''
+    ''' Outputs shell code representing the difference
+    between the two environments.
+
+    Ideally, 'envdiff --shell SHELL COMMAND' will produce
+    code for SHELL exporting new variables, unsetting deleted
+    variables and modifying new variables.
+    '''
     new_vars = set(env_after.env) - set(env_before.env)
     deleted_vars = set(env_before.env) - set(env_after.env)
     common_vars = set(env_before.env).intersection(set(env_after.env))
