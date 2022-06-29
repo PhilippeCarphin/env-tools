@@ -13,6 +13,10 @@ I came back to this code.  But now I think this code was only meant to look at
 the environment and create reports.
 '''
 
+secrets = ['GITLAB_ACCESS_TOKEN']
+@envtool.parses(secrets)
+def process_gitlab_token(value):
+    return len(value)*'●'
 
 '''
 ================================================================================
@@ -22,6 +26,9 @@ their known meaning.
 '''
 @envtool.parses(['SSH_CLIENT'])
 def process_ssh_client(value):
+    if not value:
+        return None
+
     tokens = value.split(' ')
     return {"ip":tokens[0],
             "port1": tokens[1],
@@ -31,8 +38,7 @@ def process_ssh_client(value):
 @envtool.stringizes(['SSH_CLIENT'])
 @envtool.pretty_stringizes(['SSH_CLIENT'])
 def pretty_str_ssh_client(value):
-    print("PISS BUCKET")
-    return ' '.join(value[k] for k in value).strip()
+    return '    ' + str(value)
 
 
 '''
