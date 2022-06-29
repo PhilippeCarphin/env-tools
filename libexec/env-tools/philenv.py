@@ -53,13 +53,14 @@ I'm actually having some trouble with this.  Any way, why would I even want to
 look at
 '''
 colon_lists = [
+    'SSMUSE_LOADED',
     'CDPATH', 'PATH', 'LD_LIBRARY_PATH', 'DYLD_LIBRARY_PATH',
     'CPATH', 'MIC_LD_LIBRARY_PATH', 'INFOPATH', 'OBJC_INCLUDE_PATH',
     'NLSPATH', 'LIBRARY_PATH', 'SSM_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH',
     'C_INCLUDE_PATH', 'MANPATH', 'EC_INCLUDE_PATH',
     'LIBPATH', 'PYTHONPATH', 'TCL_LIBRARY', 'LD_LIB_PATH', 'CRAY_LD_LIBRARY_PATH', 'LOADEDMODULES', '_LMFILES_',
 ]
-space_lists = ['EC_LD_LIBRARY_PATH']
+space_lists = ['EC_LD_LIBRARY_PATH', 'SSMUSE_PLATFORMS', 'JOBCTL_PBS_CELLS', 'ORDENV_PLATFORMS', 'ORDENV_USER_PROFILES', 'ORDENV_USER_PROFILE_FILENAMES']
 @envtool.parses(colon_lists)
 def process_colon_list(value):
     if value == '':
@@ -78,7 +79,7 @@ def space_list_to_str(value):
     return ' '.join(value)
 
 
-@envtool.pretty_stringizes(colon_lists)
+@envtool.pretty_stringizes(colon_lists + space_lists)
 def colon_list_to_pretty_str(value):
     return '    ' + '\n    '.join(value)
 
@@ -118,13 +119,21 @@ SSH_CONNECTION
 '''
 ssh_connection = ['SSH_CONNECTION']
 @envtool.parses(ssh_connection)
-def process_space_list(value):
-    return value.strip(' ').split(' ')
+def process_ssh_connection(value):
+    words = value.strip().split(' ')
+    if value == '':
+        return None
+    return {
+            "ip1": words[0],
+            "port1": words[1],
+            "ip2": words[2],
+            "port2": words[3]
+    }
 
 @envtool.stringizes(ssh_connection)
 @envtool.pretty_stringizes(ssh_connection)
 def space_list_to_str(value):
-    return ' '.join(value)
+    return '    ' + str(value)
 
 
 '''
