@@ -72,7 +72,6 @@ def process_space_list(value):
 
 @envtool.stringizes(colon_lists)
 def colon_list_to_str(value):
-    print(f'[colon_list_to_str]: value = {value}')
     return ':'.join(value)
 @envtool.stringizes(space_lists)
 def space_list_to_str(value):
