@@ -53,7 +53,7 @@ def find_in_value(var, value,search_string, type='endswith', custom_match=None):
 
 def find_in_env_command(args):
     needle = args.needle
-    match_type = None
+    match_type = 'contains'
     if args.exact:
         match_type = 'exact'
     pprint(find_in_env(needle, type=match_type))
