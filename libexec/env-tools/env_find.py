@@ -41,7 +41,7 @@ matcher_map = {
 }
 
 def find_in_value(var, value,search_string, type='endswith', custom_match=None):
-    match = custom_match if custom_match else matcher[type]
+    match = custom_match if custom_match else matcher_map[type]
     if ':' in value:
         dirs = value.split(':')
         for d in filter(lambda d: os.path.isdir(d), dirs):
