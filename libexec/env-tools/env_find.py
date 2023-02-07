@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 from pprint import pprint
 
 def dir_contains(d,search_string):
@@ -9,7 +10,7 @@ def dir_contains(d,search_string):
     try:
         contents = os.listdir(d)
     except OSError as e:
-        print(e)
+        print(e, file=sys.stderr)
         return False
     for f in contents:
         if search_string in f:
@@ -18,13 +19,21 @@ def dir_contains(d,search_string):
 
 def find_in_env(f, type='contains', custom_match=None):
     for a in find_in_env_gen(f, type, custom_match):
-        print(a)
+        print(a, file=sys.stderr)
+        yield(a)
 
-def find_in_env_gen(f, type='contains', custom_match=None):
-    for var in os.environ:
-        yield from find_in_value(var, os.environ[var], f, type, custom_match)
+def find_in_env_gen(search_string, type='contains', custom_match=None):
+    for var in sorted(os.environ):
+        yield from find_in_value(var, os.environ[var], search_string, type, custom_match)
 
 def get_matches_from_dir(var, d, matcher, search_string):
+    if '/' in search_string:
+        words = search_string.split('/')
+        d = os.path.join(d, *words[:-1])
+        search_string = words[-1]
+    print(f"\033[32mSearching in directory {d} from variable {var}\033[0m", file=sys.stderr)
+    if not os.path.isdir(d):
+        return
     for file in os.listdir(d):
         if matcher(search_string, file):
             yield {
@@ -40,23 +49,27 @@ matcher_map = {
     'so_with_numbers': lambda n,h: so_regex.search(h) is not None
 }
 
-def find_in_value(var, value,search_string, type='endswith', custom_match=None):
+def find_in_value(var, value, search_string, type='endswith', custom_match=None):
+    print(f"\033[1;35mSearching in directories from variable {var}\033[0m", file=sys.stderr)
     match = custom_match if custom_match else matcher_map[type]
-    if ':' in value:
-        dirs = value.split(':')
+    if os.path.isdir(value):
+        yield from get_matches_from_dir(var, value, match, search_string)
+    else:
+        if ':' in value:
+            dirs = value.split(':')
+        elif ' ' in value:
+            dirs = value.split(' ')
+        else:
+            dirs = []
         for d in filter(lambda d: os.path.isdir(d), dirs):
             yield from get_matches_from_dir(var, d, match, search_string)
-    elif os.path.isdir(value):
-        yield from get_matches_from_dir(var, value, match, search_string)
-# def find_in_value(*args, **kwargs):
-#     return list(find_in_value_gen(*args, **kwargs))
 
 def find_in_env_command(args):
     needle = args.needle
     match_type = 'contains'
     if args.exact:
         match_type = 'exact'
-    pprint(find_in_env(needle, type=match_type))
+    pprint(list(find_in_env(needle, type=match_type)))
 
 if __name__ == '__main__':
     import sys
