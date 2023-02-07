@@ -51,7 +51,7 @@ def find_symbol_in_env(symbol, demangle=False):
         from progress.bar import Bar
     except:
         print("run 'python3 -m pip install --user progress'")
-    all_libs = list(env_find.find_in_env_gen(None, type='custom', custom_match=is_some_kind_of_lib))
+    all_libs = list(env_find.find_in_env_gen("", type='custom', custom_match=is_some_kind_of_lib))
     try:
         for match in Bar('Looking for symbols in libs', suffix='%(index)d/%(max)d ETA %(eta)d').iter(all_libs):
             file_path = match['location'] + '/' + match['file']
