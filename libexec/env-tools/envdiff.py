@@ -105,7 +105,32 @@ def env_diff(command):
     # Redirect 1 to 2 in case the command has set up traps that may print to stdout
     exec 1>&2
     '''
-    result = subprocess.run(after_script, shell=True, universal_newlines=True, stdout=subprocess.PIPE)
+
+    result = subprocess.run(["/bin/bash", "-c", after_script], universal_newlines=True, stdout=subprocess.PIPE)
+    #
+    # NOTE: From cypthon:Lib/subprocess.py:1710, setting shell=True and passing
+    # a string for args causes the string args to be passed to 'sh -c' and it
+    # seems that `sh -c` stops when a syntax error is encountered in a sourced
+    # file.
+    #
+    #     after_script = '''
+    #         source a_file_that_contains_syntax_error.sh
+    #         echo 'end'
+    #         '''
+    #
+    # I.E. we don't see the 'end' being printed.  If after_script was a file,
+    # and we sourced that file in an interactive /bin/sh, then we do see the
+    # 'end' string being printed.
+    #
+    # With BASH, the behavior is the same in interactive or with 'bash -c' we
+    # see the 'end' being printed.  Since the content of {command} in after_script
+    # is likely something like 'source some_file' and 'some_file' may source
+    # any number of files and so on, one of which may have a syntax error, it
+    # is makes a big difference to use the above call to subprocess.run()
+    # instead of the two below ones
+    #
+    #     result = subprocess.run(after_script, shell=True, ...)
+    #     result = subprocess.run(["/bin/sh", "-c", after_script], ...)
     if result.returncode != 0:
         print(f"{sys.argv[0]} : \033[33mWARNING\033[0m: command returned non-zero exit code {result.returncode}")
 
