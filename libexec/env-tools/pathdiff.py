@@ -24,9 +24,9 @@ def path_diff(path_before, path_after):
     files_after = get_execs_from_path(path_after)
     res = get_difference(files_before, files_after)
     print('============== removed ==================')
-    pprint(list(res['gone']))
+    pprint(list(sorted(res['gone'])))
     print('============== added ==================')
-    pprint(list(res['new']))
+    pprint(list(sorted(res['new'])))
     print("PATHDIFF : #new={}, #kept={}, #gone={}".format(len(res['new']), len(res['kept']), len(res['gone']) ), file=sys.stderr)
 
 
