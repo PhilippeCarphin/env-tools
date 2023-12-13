@@ -19,6 +19,7 @@ def get_effect(env_before, env_after):
     common_vars = set(env_before.env).intersection(set(env_after.env))
 
     report = []
+    report.append('# \033[1;35m ======== NOTE: Reliability of this output must be assessed by a human ===========\033[0m')
     report.append('# \033[1;32m========== New variables ===========\033[0m')
     for var in sorted(new_vars):
         report.append(env_after.get_declaration(var))
@@ -27,12 +28,12 @@ def get_effect(env_before, env_after):
     for var in sorted(deleted_vars):
         report.append(env_before.get_unsetting(var))
 
-    report.append('# \033[1;32m========= Changed Vars =============\033[0m')
+    report.append('# \033[1;34m========= Changed Vars =============\033[0m')
     for var in sorted(common_vars):
         before = env_before.env[var]
         after = env_after.env[var]
         if before != after:
-            report.append(env_before.get_change(var, before, after))
+            report.append(env_before.get_declaration(var, after))
     return '\n'.join(report)
 
 
@@ -72,8 +73,9 @@ def compare_envs(env_before, env_after):
     for var in sorted(modified_vars):
         before = env_before.env[var]
         after = env_after.env[var]
-        if var in envtool.comparers:
-            result = envtool.comparers[var](before, after)
+        comparer = envtool._get_comparer(var)
+        if comparer:
+            result = comparer(before,after)
             if result != '':
                 report.append(var + '\n' + result)
         else:

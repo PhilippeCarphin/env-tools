@@ -3,6 +3,7 @@
 import subprocess
 import envtool
 import json
+import difflib
 ''' This shows how you can specify what the tool does with various environment
 variables.
 
@@ -12,6 +13,24 @@ I want to create a wrapper tool for manipulating the environment.  So naturally
 I came back to this code.  But now I think this code was only meant to look at
 the environment and create reports.
 '''
+bash_func = ['BASH_FUNC_[a-zA-Z_.-]*%%']
+@envtool.pretty_stringizes(bash_func)
+def process_bash_func(value):
+    lines = len(value.splitlines())
+    return f"() {{ ... ({lines} lines) }}"
+
+@envtool.compares(bash_func)
+def compare_bash_func(before, after):
+    differ = difflib.Differ()
+    def color(l):
+        diff_colors = {'+': '\033[32m', ' ': '', '-': '\033[31m', '?': '\033[36m'}
+        if l.startswith('+++') or l.startswith('---') or l.startswith('@@'):
+            return '\033[1;34m'
+        else:
+            return diff_colors[l[0]]
+    diff = map(lambda l: f"    {color(l)}{l.strip()}\033[0m",
+            filter( lambda l: not (l.startswith('---') or l.startswith('+++')), difflib.unified_diff(before.splitlines(), after.splitlines())))
+    return '\n'.join(diff)
 
 secrets = ['GITLAB_ACCESS_TOKEN']
 @envtool.parses(secrets)
@@ -59,6 +78,10 @@ colon_lists = [
     'NLSPATH', 'LIBRARY_PATH', 'SSM_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH',
     'C_INCLUDE_PATH', 'MANPATH', 'EC_INCLUDE_PATH',
     'LIBPATH', 'PYTHONPATH', 'TCL_LIBRARY', 'LD_LIB_PATH', 'CRAY_LD_LIBRARY_PATH', 'LOADEDMODULES', '_LMFILES_',
+    'PKG_CONFIG_PATH',
+    'ACLOCAL_PATH',
+    'CMAKE_PREFIX_PATH',
+    'EC_CMAKE_MODULE_PATH',
 ]
 space_lists = ['EC_LD_LIBRARY_PATH', 'SSMUSE_PLATFORMS', 'JOBCTL_PBS_CELLS', 'ORDENV_PLATFORMS', 'ORDENV_USER_PROFILES', 'ORDENV_USER_PROFILE_FILENAMES']
 @envtool.parses(colon_lists)

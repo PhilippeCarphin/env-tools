@@ -12,6 +12,7 @@ import os
 import sys
 import json
 import subprocess
+import re
 from pprint import pprint
 
 
@@ -53,6 +54,25 @@ compares = make_decorator(comparers)
 updaters = {}
 updates = make_decorator(updaters)
 
+def _get_stringizer(varname):
+    for key, func in stringizers.items():
+        if re.fullmatch(key, varname):
+            return func
+    return str
+
+def _get_pretty_stringizer(varname):
+    for key, func in pretty_stringizers.items():
+        if re.fullmatch(key, varname):
+            return func
+    return str
+
+def _get_comparer(varname):
+    for key, func in comparers.items():
+        if re.fullmatch(key, varname):
+            return func
+    return None
+
+
 class EnvWrapper:
     ''' Class that encapsulates a dictionnary of environment variables
     The keys are variable names and the values are the parsed string values
@@ -83,20 +103,18 @@ class EnvWrapper:
 
         '''
         if key in self.env:
-            if key in stringizers:
-                return key + '=' + stringizers[key](self.env[key])
-            else:
-                return key + '=' + str(self.env[key])
+            stringizer = _get_stringizer(key)
+            print(f"stringizer for '{key}' is {stringizer}")
+            return f"{key}={stringizer(self.env[key])}"
         else:
             return key + ' is not in environment'
 
     def get_pretty_str(self, key):
         ''' Get a pretty representation of the variable '''
         if key in self.env:
-            if key in pretty_stringizers:
-                return key + '=\n' + pretty_stringizers[key](self.env[key])
-            else:
-                return key + '=' + str(self.env[key])
+            pretty_stringizer = _get_pretty_stringizer(key)
+            print(f"pretty_stringizer for '{key}' is {pretty_stringizer}")
+            return f"{key}={pretty_stringizer(self.env[key])}"
         else:
             return key + ' is not in environment'
 
@@ -138,14 +156,20 @@ class EnvWrapper:
         return cls(representation=representation)
 
     def get_declaration(self, var):
-        real_value = self.get_str
+        if var.endswith('%%'):
+            # Env has 'BASH_FUNC_<name>%%=() {...\n}'
+            func_name = var[len('BASH_FUNC_'):-len('%%')]
+            func_value = self.env[var][len('() {'):]
+            return f"{func_name}(){{\n{func_value}\nexport -f {func_name}"
+
         if var in stringizers:
-            real_value = stringizers[var](self.env[var])
-        else:
-            real_value = str(self.env[var])
-        return f'{var}="{real_value}"'
+            return f"{var}=stringizers[var](self.env[var])"
+
+        return f"{var}=str(self.env[var])"
 
     def get_unsetting(self, var):
+        if var.endswith('%%'):
+            return f'unset -f {var[len("BASH_FUNC_"):-len("%%")]}'
         return f'unset {var}'
 
     def get_change(self, var, before, after):
